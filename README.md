@@ -1,4 +1,4 @@
-# Project: FOLO&trade;
+# Project: FoLo&trade;
 ## Group: Cynthia Breazeal
 
 Repository for project group Cynthia Breazeal course DA210A  at Malmoe University
