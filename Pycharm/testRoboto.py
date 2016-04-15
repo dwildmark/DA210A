@@ -1,10 +1,15 @@
-# import the necessary packages
+import serial
 import cv2
 
-# load the video
 camera = cv2.VideoCapture(0)
-radians = 18.8/155
-radiansPerPixel = radians/79
+radians = 18.8 / 155
+radiansPerPixel = radians / 79
+
+ser = serial.Serial(
+    port='COM5', baudrate=115200, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS,
+    timeout=0, writeTimeout=0)
+
+print("connected to: " + ser.portstr)
 
 # keep looping
 while True:
@@ -12,16 +17,11 @@ while True:
     (grabbed, frame) = camera.read()
     status = "No Targets"
 
-    # check to see if we have reached the end of the
-    # video
-    if not grabbed:
-        break
-
     # convert the frame to grayscale, blur it, and detect edges
     #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     (B, G, R) = cv2.split(frame)
     blurred = cv2.GaussianBlur(R, (7, 7), 0)
-    edged = cv2.Canny(blurred, 50, 180)
+    edged = cv2.Canny(blurred, 30, 200)
 
     # find contours in the edge map
     (_, cnts, _) = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -47,16 +47,14 @@ while True:
             # aspect ratio of the contour falls within appropriate bounds
             keepDims = w > 20 and h > 20
             keepSolidity = solidity > 0.9
-            #keepAspectRatio = 0.9 <= aspectRatio <= 1.1
 
             # ensure that the contour passes all our tests
-            if keepDims and keepSolidity: #and keepAspectRatio:
+            if keepDims and keepSolidity:
                 # draw an outline around the target and update the status
                 # text
                 cv2.drawContours(frame, [approx], -1, (0, 0, 255), 4)
-                status = "Target(s) Acquired: Distance: " + str(18.8/(radiansPerPixel * h)) + "cm\npixels: " + str(w) +\
-                         "x" + str(h)
-
+                distance = 18.8 / (radiansPerPixel * h)
+                status = "Distance: " + str(distance) + "cm, pixels: " + str(w) + "x" + str(h)
 
                 # compute the center of the contour region and draw the
                 # crosshairs
@@ -67,6 +65,22 @@ while True:
                 cv2.line(frame, (startX, cY), (endX, cY), (0, 0, 255), 3)
                 cv2.line(frame, (cX, startY), (cX, endY), (0, 0, 255), 3)
 
+                # Calculate pulsewidths for Arduino
+                middleX = frame.shape[1] / 2
+
+                sideError = middleX - cX
+                distanceError = distance - 200
+
+                PWL = (distanceError + 1500) + sideError / 2
+                PWR = (distanceError + 1500) - sideError / 2
+
+                PWL = min(max(810, PWL), 2190)
+                PWR = min(max(810, PWR), 2190)
+
+                ser.write(str(PWL) + ":" + str(PWR))
+
+
+
     cv2.putText(frame, status, (20, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     cv2.imshow("Frame", frame)
     key = cv2.waitKey(1) & 0xFF
@@ -74,5 +88,6 @@ while True:
         break
 
 # cleanup the camera and close any open windows
+ser.close()
 camera.release()
 cv2.destroyAllWindows()
