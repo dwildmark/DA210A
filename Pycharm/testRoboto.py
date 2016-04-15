@@ -53,7 +53,7 @@ while True:
                 # draw an outline around the target and update the status
                 # text
                 cv2.drawContours(frame, [approx], -1, (0, 0, 255), 4)
-                distance = 18.8 / (radiansPerPixel * h)
+                distance = 18.8 / (radiansPerPixel * max(h, w))
                 status = "Distance: " + str(distance) + "cm, pixels: " + str(w) + "x" + str(h)
 
                 # compute the center of the contour region and draw the
