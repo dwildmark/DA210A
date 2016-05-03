@@ -11,7 +11,7 @@
 #include "utils.h"
 
 /* This task reads an analog value, filters it 
- * and calculates PID value for fan PWM 
+ * and calculates PID value for motor control PWM 
  */
 void task_regulate(void *pvParameters)
 {

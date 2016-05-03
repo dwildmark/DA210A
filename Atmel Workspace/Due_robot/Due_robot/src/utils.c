@@ -18,13 +18,13 @@ void read_counters(void)
 	int new_reading_b = ioport_get_pin_level(CHB_PIN0) | (ioport_get_pin_level(CHB_PIN1)<<1) | (ioport_get_pin_level(CHB_PIN2)<<2) | (ioport_get_pin_level(CHB_PIN3)<<3);
 	
 	if(old_reading_a > new_reading_a){
-		cha_reading = 16 - old_reading_a + new_reading_a;
+		cha_reading = 15 - old_reading_a + new_reading_a;
 	} else {
 		cha_reading = new_reading_a - old_reading_a;
 	}
 	
 	if(old_reading_b > new_reading_b){
-		chb_reading = 16 - old_reading_b + new_reading_b;
+		chb_reading = 15 - old_reading_b + new_reading_b;
 	} else {
 		chb_reading = new_reading_b - old_reading_b;
 	}

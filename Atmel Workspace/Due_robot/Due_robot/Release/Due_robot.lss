@@ -2704,11 +2704,11 @@ Disassembly of section .text:
    817e6:	4b21      	ldr	r3, [pc, #132]	; (8186c <pwm_config+0xa4>)
    817e8:	a901      	add	r1, sp, #4
    817ea:	9301      	str	r3, [sp, #4]
-   817ec:	9302      	str	r3, [sp, #8]
-   817ee:	4b20      	ldr	r3, [pc, #128]	; (81870 <pwm_config+0xa8>)
-   817f0:	481d      	ldr	r0, [pc, #116]	; (81868 <pwm_config+0xa0>)
-   817f2:	9303      	str	r3, [sp, #12]
-   817f4:	4b1f      	ldr	r3, [pc, #124]	; (81874 <pwm_config+0xac>)
+   817ec:	4b20      	ldr	r3, [pc, #128]	; (81870 <pwm_config+0xa8>)
+   817ee:	481e      	ldr	r0, [pc, #120]	; (81868 <pwm_config+0xa0>)
+   817f0:	9303      	str	r3, [sp, #12]
+   817f2:	4b20      	ldr	r3, [pc, #128]	; (81874 <pwm_config+0xac>)
+   817f4:	9402      	str	r4, [sp, #8]
    817f6:	4798      	blx	r3
    817f8:	491f      	ldr	r1, [pc, #124]	; (81878 <pwm_config+0xb0>)
    817fa:	f04f 090b 	mov.w	r9, #11
@@ -3004,7 +3004,7 @@ Disassembly of section .text:
    81aca:	480d      	ldr	r0, [pc, #52]	; (81b00 <read_counters+0x8c>)
    81acc:	4299      	cmp	r1, r3
    81ace:	bfc6      	itte	gt
-   81ad0:	f1c1 0110 	rsbgt	r1, r1, #16
+   81ad0:	f1c1 010f 	rsbgt	r1, r1, #15
    81ad4:	18c9      	addgt	r1, r1, r3
    81ad6:	1a59      	suble	r1, r3, r1
    81ad8:	8001      	strh	r1, [r0, #0]
@@ -3014,7 +3014,7 @@ Disassembly of section .text:
    81ae0:	6023      	str	r3, [r4, #0]
    81ae2:	4291      	cmp	r1, r2
    81ae4:	bfc6      	itte	gt
-   81ae6:	f1c1 0110 	rsbgt	r1, r1, #16
+   81ae6:	f1c1 010f 	rsbgt	r1, r1, #15
    81aea:	1889      	addgt	r1, r1, r2
    81aec:	1a51      	suble	r1, r2, r1
    81aee:	8029      	strh	r1, [r5, #0]

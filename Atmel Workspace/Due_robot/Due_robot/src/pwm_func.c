@@ -1,7 +1,7 @@
 /*
  * This file holds functions for initializing and using the PWM device.
  *
- *  Author: Dennis Wildmark, Olle Casperson
+ *  Author: Dennis Wildmark, Olle Casperson, Jonathan Böcker
  */ 
 #include <asf.h>
 #include "pwm_func.h"
@@ -19,7 +19,7 @@ int pwm_config(void)
 		pwm_channel_disable(PWM, PWM_CHANNEL_0);
 		pwm_clock_t pwmclock = {
 			.ul_clka = PWM_FREQUENCY * PWM_RESOLUTION,
-			.ul_clkb = PWM_FREQUENCY * PWM_RESOLUTION,
+			.ul_clkb = 0,
 			.ul_mck = sysclk_get_cpu_hz()
 		};
 		pwm_init(PWM, &pwmclock);
