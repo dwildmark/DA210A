@@ -83,7 +83,7 @@ int main( void )
 			
 			ioport_set_pin_level(PIN_13, false);
 			
-			delay_ms(10);
+			delay_ms(100);
 			
 			ioport_set_pin_level(PIN_13, true);
 			

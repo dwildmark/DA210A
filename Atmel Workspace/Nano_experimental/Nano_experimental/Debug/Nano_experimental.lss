@@ -21,13 +21,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   8 .debug_frame  0000008c  00000000  00000000  00002870  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    0001044b  00000000  00000000  000028fc  2**0
+  9 .debug_str    00010456  00000000  00000000  000028fc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    00000154  00000000  00000000  00012d47  2**0
+ 10 .debug_loc    00000154  00000000  00000000  00012d52  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000040  00000000  00000000  00012e9b  2**0
+ 11 .debug_ranges 00000040  00000000  00000000  00012ea6  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_macro  00003e0e  00000000  00000000  00012edb  2**0
+ 12 .debug_macro  00003e0e  00000000  00000000  00012ee6  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -345,8 +345,8 @@ static inline void __portable_avr_delay_cycles(unsigned long n)
  134:	84 2f       	mov	r24, r20
  136:	93 2f       	mov	r25, r19
  138:	01 96       	adiw	r24, 0x01	; 1
- 13a:	82 38       	cpi	r24, 0x82	; 130
- 13c:	26 e0       	ldi	r18, 0x06	; 6
+ 13a:	8a 31       	cpi	r24, 0x1A	; 26
+ 13c:	21 e4       	ldi	r18, 0x41	; 65
  13e:	92 07       	cpc	r25, r18
  140:	d9 f7       	brne	.-10     	; 0x138 <main+0x86>
 {
