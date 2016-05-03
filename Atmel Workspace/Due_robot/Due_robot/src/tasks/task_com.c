@@ -25,15 +25,10 @@ void task_com(void *pvParameters)
 		
 		strsep(&end, ":");
 		if(new_value==0) cha_setpoint = atoi(tok);
-		printf(tok);
-		printf("\n");
 		tok = end;
 		strsep(&end, ":");
 		if(new_value==0) chb_setpoint = atoi(tok);
-		printf(tok);
-		printf("\n");
 		new_value = 1;
-		
 
 		/* Sleep for some time */
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);

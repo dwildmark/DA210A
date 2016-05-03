@@ -24,6 +24,8 @@ src\ASF\thirdparty\wireless\addons\sio2host\uart\sio2host.c
 
 src\config_functions\console_func.c
 
+src\pwm_func.c
+
 src\tasks\task_com.c
 
 src\tasks\task_regulate.c

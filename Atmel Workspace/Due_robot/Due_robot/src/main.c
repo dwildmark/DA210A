@@ -7,15 +7,16 @@
 #include "tasks/task_regulate.h"
 #include "sync.h"
 #include "utils.h"
+#include "pwm_func.h"
 
 
 /* "Global" variables shared between tasks declared here */
 xSemaphoreHandle sync = (xSemaphoreHandle) 1;
 
-uint16_t cha_reading;
-uint16_t chb_reading;
-uint16_t cha_setpoint;
-uint16_t chb_setpoint;
+uint16_t cha_reading = 0;
+uint16_t chb_reading = 0;
+uint32_t cha_setpoint;
+uint32_t chb_setpoint;
 uint16_t new_value = 0;
 
 
@@ -27,6 +28,7 @@ int main (void)
 	configure_console();
 	ioport_init();
 	init_pins();
+	pwm_config();
 	delay_init(sysclk_get_cpu_hz());
 	
 	/* Configure RTOS tasks and start tasks */

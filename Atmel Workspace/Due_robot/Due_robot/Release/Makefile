@@ -120,6 +120,7 @@ C_SRCS +=  \
 ../src/ASF/thirdparty/freertos/freertos-7.3.0/source/timers.c \
 ../src/ASF/thirdparty/wireless/addons/sio2host/uart/sio2host.c \
 ../src/config_functions/console_func.c \
+../src/pwm_func.c \
 ../src/tasks/task_com.c \
 ../src/tasks/task_regulate.c \
 ../src/utils.c \
@@ -164,6 +165,7 @@ src/ASF/thirdparty/freertos/freertos-7.3.0/source/tasks.o \
 src/ASF/thirdparty/freertos/freertos-7.3.0/source/timers.o \
 src/ASF/thirdparty/wireless/addons/sio2host/uart/sio2host.o \
 src/config_functions/console_func.o \
+src/pwm_func.o \
 src/tasks/task_com.o \
 src/tasks/task_regulate.o \
 src/utils.o \
@@ -201,6 +203,7 @@ src/ASF/thirdparty/freertos/freertos-7.3.0/source/tasks.o \
 src/ASF/thirdparty/freertos/freertos-7.3.0/source/timers.o \
 src/ASF/thirdparty/wireless/addons/sio2host/uart/sio2host.o \
 src/config_functions/console_func.o \
+src/pwm_func.o \
 src/tasks/task_com.o \
 src/tasks/task_regulate.o \
 src/utils.o \
@@ -238,6 +241,7 @@ src/ASF/thirdparty/freertos/freertos-7.3.0/source/tasks.d \
 src/ASF/thirdparty/freertos/freertos-7.3.0/source/timers.d \
 src/ASF/thirdparty/wireless/addons/sio2host/uart/sio2host.d \
 src/config_functions/console_func.d \
+src/pwm_func.d \
 src/tasks/task_com.d \
 src/tasks/task_regulate.d \
 src/utils.d \
@@ -275,6 +279,7 @@ src/ASF/thirdparty/freertos/freertos-7.3.0/source/tasks.d \
 src/ASF/thirdparty/freertos/freertos-7.3.0/source/timers.d \
 src/ASF/thirdparty/wireless/addons/sio2host/uart/sio2host.d \
 src/config_functions/console_func.d \
+src/pwm_func.d \
 src/tasks/task_com.d \
 src/tasks/task_regulate.d \
 src/utils.d \
@@ -317,6 +322,8 @@ LINKER_SCRIPT_DEP+=  \
 
 
 # AVR32/GNU C Compiler
+
+
 
 
 
@@ -437,14 +444,14 @@ src/config_functions/%.o: ../src/config_functions/%.c
 	@echo Finished building: $<
 	
 
-src/tasks/%.o: ../src/tasks/%.c
+src/%.o: ../src/%.c
 	@echo Building file: $<
 	@echo Invoking: ARM/GNU C Compiler : 4.9.3
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAM3X8E__ -DNDEBUG -DBOARD=ARDUINO_DUE_X -Dscanf=iscanf -DARM_MATH_CM3=true -Dprintf=iprintf -D__SAM3X8E__ -DNDEBUG -D__FREERTOS__  -I"../common/applications/user_application/sam3x8e_arduino_due_x/config" -I"../src/ASF/sam/utils/cmsis/sam3x/include" -I"../src/config" -I"../src/ASF/thirdparty/CMSIS/Lib/GCC" -I"../src/ASF/common/utils" -I"../src" -I"../src/ASF/common/services/clock" -I"../src/ASF/common/services/gpio" -I"../src/ASF/sam/drivers/pmc" -I"../src/ASF/sam/utils" -I"../src/ASF/sam/utils/preprocessor" -I"../src/ASF/sam/boards" -I"../src/ASF/common/boards" -I"../src/ASF/sam/drivers/pio" -I"../src/ASF/sam/boards/arduino_due_x" -I"../src/ASF/sam/utils/header_files" -I"../src/ASF/sam/utils/cmsis/sam3x/source/templates" -I"../src/ASF/common/services/ioport" -I"../src/ASF/thirdparty/CMSIS/Include" -I"../src/ASF/sam/drivers/uart" -I"../src/ASF/thirdparty/freertos/freertos-7.3.0/source/include" -I"../src/ASF/thirdparty/freertos/freertos-7.3.0/source/portable/gcc/sam" -I"../src/ASF/sam/drivers/adc" -I"../src/ASF/sam/drivers/pwm" -I"../src/ASF/sam/drivers/dacc" -I"../src/ASF/sam/drivers/tc" -I"../src/ASF/common/services/delay" -I"../src/ASF/common/services/serial/sam_uart" -I"../src/ASF/common/services/serial" -I"../src/ASF/common/utils/stdio/stdio_serial" -I"../src/ASF/sam/drivers/usart" -I"../src/ASF/thirdparty/wireless/addons/sio2host/uart" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAM3X_DFP\1.0.35\include" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\arm\cmsis\4.2.0\CMSIS\Include"  -Os -fdata-sections -ffunction-sections -mlong-calls -Wall -mcpu=cortex-m3 -c -pipe -fno-strict-aliasing -Wall -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -std=gnu99 -ffunction-sections -fdata-sections -Wchar-subscripts -Wcomment -Wformat=2 -Wimplicit-int -Wmain -Wparentheses -Wsequence-point -Wreturn-type -Wswitch -Wtrigraphs -Wunused -Wuninitialized -Wunknown-pragmas -Wfloat-equal -Wundef -Wshadow -Wbad-function-cast -Wwrite-strings -Wsign-compare -Waggregate-return  -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wno-deprecated-declarations -Wpacked -Wredundant-decls -Wnested-externs -Wlong-long -Wunreachable-code -Wcast-align --param max-inline-insns-single=500 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-src/%.o: ../src/%.c
+src/tasks/%.o: ../src/tasks/%.c
 	@echo Building file: $<
 	@echo Invoking: ARM/GNU C Compiler : 4.9.3
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAM3X8E__ -DNDEBUG -DBOARD=ARDUINO_DUE_X -Dscanf=iscanf -DARM_MATH_CM3=true -Dprintf=iprintf -D__SAM3X8E__ -DNDEBUG -D__FREERTOS__  -I"../common/applications/user_application/sam3x8e_arduino_due_x/config" -I"../src/ASF/sam/utils/cmsis/sam3x/include" -I"../src/config" -I"../src/ASF/thirdparty/CMSIS/Lib/GCC" -I"../src/ASF/common/utils" -I"../src" -I"../src/ASF/common/services/clock" -I"../src/ASF/common/services/gpio" -I"../src/ASF/sam/drivers/pmc" -I"../src/ASF/sam/utils" -I"../src/ASF/sam/utils/preprocessor" -I"../src/ASF/sam/boards" -I"../src/ASF/common/boards" -I"../src/ASF/sam/drivers/pio" -I"../src/ASF/sam/boards/arduino_due_x" -I"../src/ASF/sam/utils/header_files" -I"../src/ASF/sam/utils/cmsis/sam3x/source/templates" -I"../src/ASF/common/services/ioport" -I"../src/ASF/thirdparty/CMSIS/Include" -I"../src/ASF/sam/drivers/uart" -I"../src/ASF/thirdparty/freertos/freertos-7.3.0/source/include" -I"../src/ASF/thirdparty/freertos/freertos-7.3.0/source/portable/gcc/sam" -I"../src/ASF/sam/drivers/adc" -I"../src/ASF/sam/drivers/pwm" -I"../src/ASF/sam/drivers/dacc" -I"../src/ASF/sam/drivers/tc" -I"../src/ASF/common/services/delay" -I"../src/ASF/common/services/serial/sam_uart" -I"../src/ASF/common/services/serial" -I"../src/ASF/common/utils/stdio/stdio_serial" -I"../src/ASF/sam/drivers/usart" -I"../src/ASF/thirdparty/wireless/addons/sio2host/uart" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\SAM3X_DFP\1.0.35\include" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\arm\cmsis\4.2.0\CMSIS\Include"  -Os -fdata-sections -ffunction-sections -mlong-calls -Wall -mcpu=cortex-m3 -c -pipe -fno-strict-aliasing -Wall -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -std=gnu99 -ffunction-sections -fdata-sections -Wchar-subscripts -Wcomment -Wformat=2 -Wimplicit-int -Wmain -Wparentheses -Wsequence-point -Wreturn-type -Wswitch -Wtrigraphs -Wunused -Wuninitialized -Wunknown-pragmas -Wfloat-equal -Wundef -Wshadow -Wbad-function-cast -Wwrite-strings -Wsign-compare -Waggregate-return  -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wno-deprecated-declarations -Wpacked -Wredundant-decls -Wnested-externs -Wlong-long -Wunreachable-code -Wcast-align --param max-inline-insns-single=500 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

@@ -1,4 +1,4 @@
-src/main.d src/main.o: ../src/main.c ../src/asf.h \
+src/pwm_func.d src/pwm_func.o: ../src/pwm_func.c ../src/asf.h \
  ../src/ASF/sam/drivers/adc/adc.h ../src/ASF/sam/utils/compiler.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\4.9.3\include\stddef.h \
  ../src/ASF/common/utils/parts.h \
@@ -151,10 +151,7 @@ src/main.d src/main.o: ../src/main.c ../src/asf.h \
  ../src/ASF/common/services/serial/sam_uart/uart_serial.h \
  ../src/ASF/sam/drivers/uart/uart.h ../src/ASF/sam/drivers/usart/usart.h \
  ../src/config/conf_uart_serial.h ../src/ASF/sam/drivers/tc/tc.h \
- ../src/ASF/sam/drivers/pio/pio_handler.h \
- ../src/config_functions/console_func.h ../src/tasks/task_com.h \
- ../src/tasks/task_regulate.h ../src/sync.h ../src/utils.h \
- ../src/pwm_func.h
+ ../src/ASF/sam/drivers/pio/pio_handler.h ../src/pwm_func.h
 
 ../src/asf.h:
 
@@ -477,15 +474,5 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../src/ASF/sam/drivers/tc/tc.h:
 
 ../src/ASF/sam/drivers/pio/pio_handler.h:
-
-../src/config_functions/console_func.h:
-
-../src/tasks/task_com.h:
-
-../src/tasks/task_regulate.h:
-
-../src/sync.h:
-
-../src/utils.h:
 
 ../src/pwm_func.h:

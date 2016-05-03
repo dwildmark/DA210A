@@ -18,8 +18,6 @@
 #define CHB_PIN2	PIO_PD3_IDX		//Pin 28
 #define CHB_PIN3	PIO_PD6_IDX		//Pin 29
 #define RS_PIN		PIO_PD10_IDX	//Pin 32
-#define CHA_PWM		PIO_PC2_IDX		//Pin 34
-#define CHB_PWM		PIO_PC3_IDX		//Pin 35
 
 void read_counters(void);
 void set_speed(ioport_pin_t pin, uint16_t speed);

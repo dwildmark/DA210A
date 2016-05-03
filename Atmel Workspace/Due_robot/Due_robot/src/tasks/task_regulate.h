@@ -10,5 +10,6 @@
 #define TASK_REGULATE_H_
 
 void task_regulate(void *pvParameters);
+float calc_speed(int new_value);
 
 #endif /* TASK_REGULATE_H_ */

@@ -671,6 +671,12 @@
     <Compile Include="src\config_functions\console_func.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\pwm_func.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\pwm_func.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\tasks\task_com.c">
       <SubType>compile</SubType>
     </Compile>

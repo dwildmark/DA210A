@@ -11,18 +11,26 @@
 
 void read_counters(void)
 {
-	cha_reading = ioport_get_pin_level(CHA_PIN0) | (ioport_get_pin_level(CHA_PIN1)<<1) | (ioport_get_pin_level(CHA_PIN2)<<2) | (ioport_get_pin_level(CHA_PIN3)<<3);
-	chb_reading = ioport_get_pin_level(CHA_PIN0) | (ioport_get_pin_level(CHA_PIN1)<<1) | (ioport_get_pin_level(CHA_PIN2)<<2) | (ioport_get_pin_level(CHA_PIN3)<<3);
-	ioport_set_pin_level(RS_PIN, true);
-	delay_ms(2);
-	ioport_set_pin_level(RS_PIN, false);
-}
-
-void set_speed(ioport_pin_t pin, uint16_t speed)
-{
-	ioport_set_pin_level(pin, true);
-	vTaskDelay((float)speed/1000);
-	ioport_set_pin_level(pin, false);
+	static int old_reading_a = 0;
+	static int old_reading_b = 0;
+	
+	int new_reading_a = ioport_get_pin_level(CHA_PIN0) | (ioport_get_pin_level(CHA_PIN1)<<1) | (ioport_get_pin_level(CHA_PIN2)<<2) | (ioport_get_pin_level(CHA_PIN3)<<3);
+	int new_reading_b = ioport_get_pin_level(CHB_PIN0) | (ioport_get_pin_level(CHB_PIN1)<<1) | (ioport_get_pin_level(CHB_PIN2)<<2) | (ioport_get_pin_level(CHB_PIN3)<<3);
+	
+	if(old_reading_a > new_reading_a){
+		cha_reading = 16 - old_reading_a + new_reading_a;
+	} else {
+		cha_reading = new_reading_a - old_reading_a;
+	}
+	
+	if(old_reading_b > new_reading_b){
+		chb_reading = 16 - old_reading_b + new_reading_b;
+	} else {
+		chb_reading = new_reading_b - old_reading_b;
+	}
+	
+	old_reading_a = new_reading_a;
+	old_reading_b = new_reading_b;
 }
 
 void init_pins(void)
@@ -36,7 +44,5 @@ void init_pins(void)
 	ioport_set_pin_dir(CHB_PIN2, IOPORT_DIR_INPUT);
 	ioport_set_pin_dir(CHB_PIN3, IOPORT_DIR_INPUT);
 	ioport_set_pin_dir(RS_PIN, IOPORT_DIR_OUTPUT);
-	ioport_set_pin_dir(CHA_PWM, IOPORT_DIR_OUTPUT);
-	ioport_set_pin_dir(CHB_PWM, IOPORT_DIR_OUTPUT);
 }
 
