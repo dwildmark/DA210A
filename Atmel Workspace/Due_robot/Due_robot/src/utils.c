@@ -35,6 +35,7 @@ void read_counters(void)
 
 void init_pins(void)
 {
+	/* Input pins for reading the counters */
 	ioport_set_pin_dir(CHA_PIN0, IOPORT_DIR_INPUT);
 	ioport_set_pin_dir(CHA_PIN1, IOPORT_DIR_INPUT);
 	ioport_set_pin_dir(CHA_PIN2, IOPORT_DIR_INPUT);
@@ -44,5 +45,16 @@ void init_pins(void)
 	ioport_set_pin_dir(CHB_PIN2, IOPORT_DIR_INPUT);
 	ioport_set_pin_dir(CHB_PIN3, IOPORT_DIR_INPUT);
 	ioport_set_pin_dir(RS_PIN, IOPORT_DIR_OUTPUT);
+	/* Input pins for reading the remote controller */
+	ioport_set_pin_dir(RX_PIN0, IOPORT_DIR_INPUT);
+	ioport_set_pin_dir(RX_PIN1, IOPORT_DIR_INPUT);
+	ioport_set_pin_dir(RX_PIN2, IOPORT_DIR_INPUT);
+	ioport_set_pin_dir(RX_PIN3, IOPORT_DIR_INPUT);
+	ioport_set_pin_dir(VT_PIN, IOPORT_DIR_INPUT);
 }
 
+uint8_t read_remote(void)
+{
+	int reading = ioport_get_pin_level(RX_PIN0) | (ioport_get_pin_level(RX_PIN1)<<1) | (ioport_get_pin_level(RX_PIN2)<<2) | (ioport_get_pin_level(RX_PIN3)<<3);
+	return reading;
+}

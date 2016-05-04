@@ -18,10 +18,16 @@
 #define CHB_PIN2	PIO_PD3_IDX		//Pin 28
 #define CHB_PIN3	PIO_PD6_IDX		//Pin 29
 #define RS_PIN		PIO_PD10_IDX	//Pin 32
+#define VT_PIN		PIO_PC15_IDX	//Pin 48
+#define RX_PIN0		PIO_PC19_IDX	//Pin 44
+#define	RX_PIN1		PIO_PC18_IDX	//Pin 45
+#define RX_PIN2		PIO_PC17_IDX	//Pin 46
+#define RX_PIN3		PIO_PC16_IDX	//Pin 47
 
 void read_counters(void);
 void set_speed(ioport_pin_t pin, uint16_t speed);
 void init_pins(void);
+uint8_t read_remote(void);
 
 
 #endif /* UTILS_H_ */

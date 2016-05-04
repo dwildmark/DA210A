@@ -55,12 +55,12 @@ int pwm_config(void)
 /************************************************************************/
 void pwm_set_value_A(uint32_t dutycycle)
 {
- 	dutycycle = min(max(dutycycle, 0), PWM_RESOLUTION);
+ 	dutycycle = min(max(dutycycle, PWM_MIN_VAL), PWM_MAX_VAL);
 	pwm_channel_update_duty(PWM, &pwm_instance_A, dutycycle);
 }
 
 void pwm_set_value_B(uint32_t dutycycle)
 {
-	dutycycle = min(max(dutycycle, 0), PWM_RESOLUTION);
+	dutycycle = min(max(dutycycle, PWM_MIN_VAL), PWM_MAX_VAL);
 	pwm_channel_update_duty(PWM, &pwm_instance_B, dutycycle);
 }

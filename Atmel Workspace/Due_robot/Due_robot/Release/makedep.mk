@@ -30,6 +30,8 @@ src\tasks\task_com.c
 
 src\tasks\task_regulate.c
 
+src\tasks\task_remote.c
+
 src\utils.c
 
 src\ASF\common\utils\stdio\write.c

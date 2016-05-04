@@ -8,6 +8,7 @@
 #include "sync.h"
 #include "utils.h"
 #include "pwm_func.h"
+#include "tasks/task_remote.h"
 
 
 /* "Global" variables shared between tasks declared here */
@@ -34,6 +35,7 @@ int main (void)
 	/* Configure RTOS tasks and start tasks */
 	vSemaphoreCreateBinary(sync);
 	xTaskCreate(task_com, (const signed char * const) "Com", TASK_STACKSIZE, NULL, 1, NULL);
-	xTaskCreate(task_regulate, (const signed char * const) "regulate", TASK_STACKSIZE, NULL, 1, NULL);		
+	xTaskCreate(task_regulate, (const signed char * const) "regulate", TASK_STACKSIZE, NULL, 1, NULL);
+	xTaskCreate(task_remote, (const signed char * const) "remote", TASK_STACKSIZE, NULL, 1, NULL);
 	vTaskStartScheduler();	
 }

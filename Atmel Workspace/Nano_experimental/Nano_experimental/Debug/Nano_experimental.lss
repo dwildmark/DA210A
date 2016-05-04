@@ -100,137 +100,52 @@ Disassembly of section .text:
   78:	c3 cf       	rjmp	.-122    	; 0x0 <__vectors>
 
 0000007a <sysclk_init>:
-#if !MEGA_XX_UN0 && !MEGA_XX_UN1
-	uint8_t *reg = (uint8_t *)&(POWER_REG_ADD);
-	uint8_t i;
-	/* Turn off all peripheral clocks that can be turned off. */
-	for (i = 0; i < NUMBER_OF_POWER_REG; i++) {
-		*(reg++) = 0xFF;
   7a:	8f ef       	ldi	r24, 0xFF	; 255
   7c:	80 93 64 00 	sts	0x0064, r24
-	}
-#endif
-#if !MEGA_UNSPECIFIED && !MEGA_XX
-	/* Set up system clock prescalers if different from defaults */
-	if ((CONFIG_SYSCLK_PSDIV != SYSCLK_PSDIV_8) ||
-			(SYSCLK_PSDIV_8 != CLKPR)) {
   80:	80 91 61 00 	lds	r24, 0x0061
-		*(reg++) = 0xFF;
-	}
-#endif
-#if !MEGA_UNSPECIFIED && !MEGA_XX
-	/* Set up system clock prescalers if different from defaults */
-	if ((CONFIG_SYSCLK_PSDIV != SYSCLK_PSDIV_8) ||
   84:	83 30       	cpi	r24, 0x03	; 3
   86:	59 f0       	breq	.+22     	; 0x9e <sysclk_init+0x24>
-
-typedef uint8_t irqflags_t;
-
-static inline irqflags_t cpu_irq_save(void)
-{
-	irqflags_t flags = SREG;
   88:	8f b7       	in	r24, 0x3f	; 63
-	cpu_irq_disable();
   8a:	f8 94       	cli
-static inline void sysclk_set_prescalers(uint8_t psdiv)
-{
-#if !MEGA_UNSPECIFIED
-	irqflags_t flags = cpu_irq_save();
-
-	ASM(
   8c:	5f 93       	push	r21
   8e:	50 e8       	ldi	r21, 0x80	; 128
   90:	50 93 61 00 	sts	0x0061, r21
   94:	53 e0       	ldi	r21, 0x03	; 3
   96:	50 93 61 00 	sts	0x0061, r21
   9a:	5f 91       	pop	r21
-}
-
-static inline void cpu_irq_restore(irqflags_t flags)
-{
-	barrier();
-	SREG = flags;
   9c:	8f bf       	out	0x3f, r24	; 63
   9e:	08 95       	ret
 
 000000a0 <board_init>:
-		port_pin_flags_t flags)
-{
-	/* Select direction and initial pin state */
-	if (flags & IOPORT_DIR_OUTPUT) {
-		if (flags & IOPORT_INIT_HIGH) {
-			*((uint8_t *)port + 2) |= pin_mask;
   a0:	95 b1       	in	r25, 0x05	; 5
-		} else {
-			*((uint8_t *)port + 2) &= ~pin_mask;
-		}
-
-		*((uint8_t *)port + 1) |= pin_mask;
   a2:	84 b1       	in	r24, 0x04	; 4
   a4:	80 62       	ori	r24, 0x20	; 32
-	} else {
-		*((uint8_t *)port + 1) &= ~pin_mask;
   a6:	8f 77       	andi	r24, 0x7F	; 127
   a8:	84 b9       	out	0x04, r24	; 4
-		if (flags & IOPORT_PULL_UP) {
-			*((uint8_t *)port + 2) |= pin_mask;
   aa:	89 2f       	mov	r24, r25
   ac:	80 6a       	ori	r24, 0xA0	; 160
   ae:	85 b9       	out	0x05, r24	; 5
   b0:	08 95       	ret
 
 000000b2 <main>:
-#define PIN_7	IOPORT_CREATE_PIN(PORTD, 7)//Knapp 2
-#define PIN_6	IOPORT_CREATE_PIN(PORTD, 6)//Knapp 3
-#define PIN_5	IOPORT_CREATE_PIN(PORTD, 5)//Knapp 4
-int main( void )
-{
-	sysclk_init();
   b2:	e3 df       	rcall	.-58     	; 0x7a <sysclk_init>
-	board_init();
   b4:	f5 df       	rcall	.-22     	; 0xa0 <board_init>
-		enum ioport_direction dir)
-{
-	PORT_t *base = arch_ioport_pin_to_base(pin);
-
-	if (dir == IOPORT_DIR_OUTPUT) {
-		base->DIR |= arch_ioport_pin_to_mask(pin);
   b6:	25 9a       	sbi	0x04, 5	; 4
   b8:	24 9a       	sbi	0x04, 4	; 4
   ba:	23 9a       	sbi	0x04, 3	; 4
   bc:	22 9a       	sbi	0x04, 2	; 4
   be:	21 9a       	sbi	0x04, 1	; 4
-	} else if (dir == IOPORT_DIR_INPUT) {
-		base->DIR &=  ~arch_ioport_pin_to_mask(pin);
   c0:	20 98       	cbi	0x04, 0	; 4
   c2:	57 98       	cbi	0x0a, 7	; 10
   c4:	56 98       	cbi	0x0a, 6	; 10
   c6:	55 98       	cbi	0x0a, 5	; 10
-{
-	PORT_t *base_add = arch_ioport_port_to_base(pin >> 3);
-
-	if (level) {
-		base_add->PORTDATA
-			= (base_add->PORTDATA  | arch_ioport_pin_to_mask
   c8:	2d 9a       	sbi	0x05, 5	; 5
   ca:	2c 9a       	sbi	0x05, 4	; 5
   cc:	2b 9a       	sbi	0x05, 3	; 5
   ce:	2a 9a       	sbi	0x05, 2	; 5
   d0:	29 9a       	sbi	0x05, 1	; 5
-#define PIN_8	IOPORT_CREATE_PIN(PORTB, 0)//Knapp 1
-#define PIN_7	IOPORT_CREATE_PIN(PORTD, 7)//Knapp 2
-#define PIN_6	IOPORT_CREATE_PIN(PORTD, 6)//Knapp 3
-#define PIN_5	IOPORT_CREATE_PIN(PORTD, 5)//Knapp 4
-int main( void )
-{
   d2:	40 e0       	ldi	r20, 0x00	; 0
   d4:	30 e0       	ldi	r19, 0x00	; 0
- * \return: level high/low
- */
-__always_inline static bool arch_ioport_get_pin_level(ioport_pin_t pin)
-{
-	PORT_t *base = arch_ioport_pin_to_base(pin);
-	return base->PINCRL & arch_ioport_pin_to_mask(pin);
   d6:	53 b1       	in	r21, 0x03	; 3
   d8:	89 b1       	in	r24, 0x09	; 9
   da:	88 1f       	adc	r24, r24
@@ -244,12 +159,6 @@ __always_inline static bool arch_ioport_get_pin_level(ioport_pin_t pin)
   ea:	25 fb       	bst	r18, 5
   ec:	22 27       	eor	r18, r18
   ee:	20 f9       	bld	r18, 0
-	{
-		btn_1 = ioport_get_pin_level(PIN_8);
-		btn_2 = ioport_get_pin_level(PIN_7);
-		btn_3 = ioport_get_pin_level(PIN_6);
-		btn_4 = ioport_get_pin_level(PIN_5);
-		if(btn_1 || btn_2 || btn_3 || btn_4)
   f0:	50 fd       	sbrc	r21, 0
   f2:	08 c0       	rjmp	.+16     	; 0x104 <main+0x52>
   f4:	81 11       	cpse	r24, r1
@@ -258,84 +167,26 @@ __always_inline static bool arch_ioport_get_pin_level(ioport_pin_t pin)
   fa:	02 c0       	rjmp	.+4      	; 0x100 <main+0x4e>
   fc:	22 23       	and	r18, r18
   fe:	59 f3       	breq	.-42     	; 0xd6 <main+0x24>
-{
-	PORT_t *base_add = arch_ioport_port_to_base(pin >> 3);
-
-	if (level) {
-		base_add->PORTDATA
-			= (base_add->PORTDATA  | arch_ioport_pin_to_mask
  100:	2c 9a       	sbi	0x05, 4	; 5
  102:	01 c0       	rjmp	.+2      	; 0x106 <main+0x54>
-					(pin));
-	} else {
-		base_add->PORTDATA
-			= (base_add->PORTDATA  & (~arch_ioport_pin_to_mask
  104:	2c 98       	cbi	0x05, 4	; 5
-__always_inline static void arch_ioport_set_pin_level(ioport_pin_t pin,
-		bool level)
-{
-	PORT_t *base_add = arch_ioport_port_to_base(pin >> 3);
-
-	if (level) {
  106:	81 11       	cpse	r24, r1
  108:	02 c0       	rjmp	.+4      	; 0x10e <main+0x5c>
-		base_add->PORTDATA
-			= (base_add->PORTDATA  | arch_ioport_pin_to_mask
  10a:	2b 9a       	sbi	0x05, 3	; 5
  10c:	01 c0       	rjmp	.+2      	; 0x110 <main+0x5e>
-					(pin));
-	} else {
-		base_add->PORTDATA
-			= (base_add->PORTDATA  & (~arch_ioport_pin_to_mask
  10e:	2b 98       	cbi	0x05, 3	; 5
-__always_inline static void arch_ioport_set_pin_level(ioport_pin_t pin,
-		bool level)
-{
-	PORT_t *base_add = arch_ioport_port_to_base(pin >> 3);
-
-	if (level) {
  110:	91 11       	cpse	r25, r1
  112:	02 c0       	rjmp	.+4      	; 0x118 <main+0x66>
-		base_add->PORTDATA
-			= (base_add->PORTDATA  | arch_ioport_pin_to_mask
  114:	2a 9a       	sbi	0x05, 2	; 5
  116:	01 c0       	rjmp	.+2      	; 0x11a <main+0x68>
-					(pin));
-	} else {
-		base_add->PORTDATA
-			= (base_add->PORTDATA  & (~arch_ioport_pin_to_mask
  118:	2a 98       	cbi	0x05, 2	; 5
-__always_inline static void arch_ioport_set_pin_level(ioport_pin_t pin,
-		bool level)
-{
-	PORT_t *base_add = arch_ioport_port_to_base(pin >> 3);
-
-	if (level) {
  11a:	21 11       	cpse	r18, r1
  11c:	02 c0       	rjmp	.+4      	; 0x122 <main+0x70>
-		base_add->PORTDATA
-			= (base_add->PORTDATA  | arch_ioport_pin_to_mask
  11e:	29 9a       	sbi	0x05, 1	; 5
  120:	01 c0       	rjmp	.+2      	; 0x124 <main+0x72>
-					(pin));
-	} else {
-		base_add->PORTDATA
-			= (base_add->PORTDATA  & (~arch_ioport_pin_to_mask
  122:	29 98       	cbi	0x05, 1	; 5
-#define PIN_8	IOPORT_CREATE_PIN(PORTB, 0)//Knapp 1
-#define PIN_7	IOPORT_CREATE_PIN(PORTD, 7)//Knapp 2
-#define PIN_6	IOPORT_CREATE_PIN(PORTD, 6)//Knapp 3
-#define PIN_5	IOPORT_CREATE_PIN(PORTD, 5)//Knapp 4
-int main( void )
-{
  124:	84 2f       	mov	r24, r20
  126:	93 2f       	mov	r25, r19
- * @{
- */
-__always_optimize
-static inline void __portable_avr_delay_cycles(unsigned long n)
-{
-	do { barrier(); } while (--n);
  128:	01 96       	adiw	r24, 0x01	; 1
  12a:	8d 34       	cpi	r24, 0x4D	; 77
  12c:	21 e0       	ldi	r18, 0x01	; 1
@@ -349,12 +200,6 @@ static inline void __portable_avr_delay_cycles(unsigned long n)
  13c:	21 e4       	ldi	r18, 0x41	; 65
  13e:	92 07       	cpc	r25, r18
  140:	d9 f7       	brne	.-10     	; 0x138 <main+0x86>
-{
-	PORT_t *base_add = arch_ioport_port_to_base(pin >> 3);
-
-	if (level) {
-		base_add->PORTDATA
-			= (base_add->PORTDATA  | arch_ioport_pin_to_mask
  142:	2d 9a       	sbi	0x05, 5	; 5
  144:	84 2f       	mov	r24, r20
  146:	93 2f       	mov	r25, r19
