@@ -7,6 +7,7 @@
 
 #include <asf.h>
 #include "utils.h"
+#include "sync.h"
 
 void task_remote(void *pvParameters)
 {
@@ -22,6 +23,20 @@ void task_remote(void *pvParameters)
 			itoa(recieved, str, 10);
 			printf(str);
 			printf("\n");
+			switch(recieved)
+			{
+			case 7:
+				cha_setpoint = 50;
+				chb_setpoint = 50;
+				break;
+			case 11:
+				cha_setpoint = 0;
+				chb_setpoint = 0;
+				break;
+			default:
+				break;
+			}
+			new_value = 1;
 		}
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 	}

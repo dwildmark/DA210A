@@ -13,8 +13,8 @@
 extern xSemaphoreHandle sync;
 extern uint16_t cha_reading;
 extern uint16_t chb_reading;
-extern uint32_t cha_setpoint;
-extern uint32_t chb_setpoint;
+extern float cha_setpoint;
+extern float chb_setpoint;
 extern uint16_t new_value;
 
 /* The conversion array length for calculating ball distance */
