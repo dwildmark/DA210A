@@ -25,8 +25,8 @@ void task_regulate(void *pvParameters)
 		read_counters();
 		int speed = (int) calc_speed(cha_reading);
 		itoa(speed, str, 10);
-		printf(str);
-		printf("\n");
+// 		printf(str);
+// 		printf("\n");
 		
 		if(new_value)
 		{
