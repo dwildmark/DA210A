@@ -16,26 +16,23 @@
 void task_regulate(void *pvParameters)
 {
 	portTickType xLastWakeTime;
-	const portTickType xTimeIncrement = 50;
+	const portTickType xTimeIncrement = taskREG_PERIOD;
 	xLastWakeTime = xTaskGetTickCount();
 	char str[30] = {0};
 			
 	while(1){
-//		regulate_PID(cha_setpoint, chb_setpoint);
-//		read_counters();
-//		int speed = (int) calc_speed(cha_reading);
-//		itoa(speed, str, 10);
-// 		printf(str);
-// 		printf("\n");
 		if(running == 1)
 		{
-			motor_controller(cha_setpoint, chb_setpoint);
-			printf("Running");
+			regulate_PID(cha_setpoint, chb_setpoint);
+// 			motor_controller(cha_setpoint, chb_setpoint);
+ 			printf("Running");
+			printf("\n");
 		} 
 		else if(running == 0)
 		{
 			motor_controller(1500, 1500);
 			printf("Stopped");
+			printf("\n");
 		}
 		
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
@@ -44,22 +41,22 @@ void task_regulate(void *pvParameters)
 
 float calc_speed(int reading)
 {
-	static int xbuff[6] = {0};
+	static int xbuff[BUFF_LENGTH] = {0};
 	static float c = (15.4 * 3.1415)/(0.05 * 72);
 	float temp_sum = 0;
 	
 	/* Move value buffer one sample forward */
-	for(int k = 5; k > 0; k--){
+	for(int k = BUFF_LENGTH - 1; k > 0; k--){
 		xbuff[k] = xbuff[k-1];
 	}
 	xbuff[0] = reading;
 	
 	/* Filter the signal */
-	for(int k = 0; k < 6; k++){
+	for(int k = 0; k < BUFF_LENGTH; k++){
 		temp_sum += xbuff[k];
 	}
 	
-	float mean_value = temp_sum / 6.0;
+	float mean_value = temp_sum / (float)BUFF_LENGTH;
 	float speed = mean_value * c;
 	return speed;
 }
@@ -69,14 +66,20 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	/* Only for debugging */
 	char str[30] = {0};
 	
-	static int sum_err_A = 0;	//Variable that holds the sum of errors
+	static int sum_err_A = 0; //Variable that holds the sum of errors
 	static int sum_err_B = 0;
 	static int old_err_A = 0; //Variable that holds the error from last function call
 	static int old_err_B = 0;
-	const float dT = (float) 50/1000; //Calculate the time step
+	const float dT = (float) taskREG_PERIOD/1000; //Calculate the time step
 	read_counters();
-	float speed_A = calc_speed(cha_reading); //ADC-value converted to millimeters
+	float speed_A = calc_speed(cha_reading); 
 	float speed_B = calc_speed(chb_reading);
+	itoa(speed_A, str, 10);
+	printf(str);
+	printf("\n");
+	itoa(speed_B, str, 10);
+	printf(str);
+	printf("\n");
 	float new_err_A = setpoint_A - speed_A; //Current error
 	float new_err_B = setpoint_B - speed_B;
 	sum_err_A += new_err_A; //add the new error to the error sum
@@ -86,20 +89,20 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	
 	/* Calculates the proportional, integral and derivative parts of the controller value */
 	float prop_A = (K_PROP) * (float)new_err_A;
-	float integ_A = 0;//(K_PROP) * (float)((dT * sum_err_A) * K_INT);
+	float integ_A = (K_PROP) * (float)((dT * sum_err_A) * K_INT);
 	
 	float prop_B = (K_PROP) * (float)new_err_B;
 	float integ_B = (K_PROP) * (float)((dT * sum_err_B) * K_INT);
 	//float deriv = (K_PROP) * (float)((d_err/dT) * K_DERIV);
 	
-	int pwm_outval_A = OFFSET + (int)(prop_A); //
-	int pwm_outval_B = OFFSET + (int)(prop_B + integ_B);
-	itoa(pwm_outval_A, str, 10);
-	printf(str);
-	printf("\n");
-	itoa(speed_A, str, 10);
-	printf(str);
-	printf("\n");
+	int pwm_outval_A = OFFSET + (int)(prop_A);
+	int pwm_outval_B = OFFSET + (int)(prop_B);
+// 	itoa(pwm_outval_A, str, 10);
+// 	printf(str);
+// 	printf("\n");
+// 	itoa(speed_A, str, 10);
+// 	printf(str);
+// 	printf("\n");
 	pwm_set_value_A(pwm_outval_A); //Write control value to pwm
 	pwm_set_value_B(pwm_outval_B);
 	old_err_A = new_err_A; //Set old error to new error
