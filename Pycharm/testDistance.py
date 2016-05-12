@@ -3,8 +3,8 @@ import cv2
 
 # load the video
 camera = cv2.VideoCapture(0)
-radians = 18.8/155
-radiansPerPixel = radians/79
+radians = 24.5/167
+radiansPerPixel = radians/160
 
 # keep looping
 while True:
@@ -47,14 +47,14 @@ while True:
             # aspect ratio of the contour falls within appropriate bounds
             keepDims = w > 20 and h > 20
             keepSolidity = solidity > 0.9
-            #keepAspectRatio = 0.9 <= aspectRatio <= 1.1
+            keepAspectRatio = 0.9 <= aspectRatio <= 1.1
 
             # ensure that the contour passes all our tests
-            if keepDims and keepSolidity: #and keepAspectRatio:
+            if keepDims and keepSolidity and keepAspectRatio:
                 # draw an outline around the target and update the status
                 # text
                 cv2.drawContours(frame, [approx], -1, (0, 0, 255), 4)
-                status = "Target(s) Acquired: Distance: " + str(18.8/(radiansPerPixel * h)) + "cm\npixels: " + str(w) +\
+                status = "Target(s) Acquired: Distance: " + str(24.5/(radiansPerPixel * h)) + "cm\npixels: " + str(w) +\
                          "x" + str(h)
 
 
