@@ -42,7 +42,7 @@ void task_regulate(void *pvParameters)
 float calc_speed_a(int reading)
 {
 	static int xbuff[BUFF_LENGTH] = {0};
-	static float c = (15.4 * 3.1415)/(0.05 * 72);
+	static float c = (15.4 * 3.1415)/(((float)taskREG_PERIOD/1000) * 72);
 	float temp_sum = 0;
 	
 	/* Move value buffer one sample forward */
@@ -64,7 +64,7 @@ float calc_speed_a(int reading)
 float calc_speed_b(int reading)
 {
 	static int xbuff[BUFF_LENGTH] = {0};
-	static float c = (15.4 * 3.1415)/(0.05 * 72);
+	static float c = (15.4 * 3.1415)/(((float)taskREG_PERIOD/1000) * 72);
 	float temp_sum = 0;
 	
 	/* Move value buffer one sample forward */
@@ -92,14 +92,16 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	static int sum_err_B = 0;
 	static int old_err_A = 0; //Variable that holds the error from last function call
 	static int old_err_B = 0;
+	static int old_outval_A = 0;
+	static int old_outval_B = 0;
 	const float dT = (float) taskREG_PERIOD/1000; //Calculate the time step
 	read_counters();
-	float speed_A = calc_speed_a(cha_reading); 
-	float speed_B = calc_speed_b(chb_reading);
-	itoa(speed_A, str, 10);
+	float speed_A = get_speed_vector(old_outval_A, calc_speed_a(cha_reading), setpoint_A);
+	float speed_B = get_speed_vector(old_outval_B, calc_speed_b(chb_reading), setpoint_B);
+	itoa((int)speed_A, str, 10);
 	printf(str);
 	printf("\n");
-	itoa(speed_B, str, 10);
+	itoa((int)speed_B, str, 10);
 	printf(str);
 	printf("\n");
 	float new_err_A = setpoint_A - speed_A; //Current error
@@ -117,8 +119,8 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	float integ_B = (K_PROP) * (float)((dT * sum_err_B) * K_INT);
 	//float deriv = (K_PROP) * (float)((d_err/dT) * K_DERIV);
 	
-	int pwm_outval_A = OFFSET + (int)(prop_A);
-	int pwm_outval_B = OFFSET + (int)(prop_B);
+	int pwm_outval_A = OFFSET + (int)(prop_A) + (int)(integ_A);
+	int pwm_outval_B = OFFSET + (int)(prop_B) + (int)(integ_B);
 // 	itoa(pwm_outval_A, str, 10);
 // 	printf(str);
 // 	printf("\n");
@@ -129,6 +131,8 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	pwm_set_value_B(pwm_outval_B);
 	old_err_A = new_err_A; //Set old error to new error
 	old_err_B = new_err_B;
+	old_outval_A = pwm_outval_A - OFFSET;
+	old_outval_B = pwm_outval_B - OFFSET;
 }
 
 void motor_controller(uint16_t target_value_A, uint16_t target_value_B)
