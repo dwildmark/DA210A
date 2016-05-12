@@ -17,7 +17,8 @@
 #define taskREG_PERIOD	100
 
 void task_regulate(void *pvParameters);
-float calc_speed(int new_value);
+float calc_speed_a(int new_value);
+float calc_speed_b(int new_value);
 void regulate_PID(float cha_setpoint, float chb_setpoint);
 void motor_controller(uint16_t target_value_A, uint16_t target_value_B);
 

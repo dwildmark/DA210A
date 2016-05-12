@@ -39,7 +39,29 @@ void task_regulate(void *pvParameters)
 	}
 }
 
-float calc_speed(int reading)
+float calc_speed_a(int reading)
+{
+	static int xbuff[BUFF_LENGTH] = {0};
+	static float c = (15.4 * 3.1415)/(0.05 * 72);
+	float temp_sum = 0;
+	
+	/* Move value buffer one sample forward */
+	for(int k = BUFF_LENGTH - 1; k > 0; k--){
+		xbuff[k] = xbuff[k-1];
+	}
+	xbuff[0] = reading;
+	
+	/* Filter the signal */
+	for(int k = 0; k < BUFF_LENGTH; k++){
+		temp_sum += xbuff[k];
+	}
+	
+	float mean_value = temp_sum / (float)BUFF_LENGTH;
+	float speed = mean_value * c;
+	return speed;
+}
+
+float calc_speed_b(int reading)
 {
 	static int xbuff[BUFF_LENGTH] = {0};
 	static float c = (15.4 * 3.1415)/(0.05 * 72);
@@ -72,8 +94,8 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	static int old_err_B = 0;
 	const float dT = (float) taskREG_PERIOD/1000; //Calculate the time step
 	read_counters();
-	float speed_A = calc_speed(cha_reading); 
-	float speed_B = calc_speed(chb_reading);
+	float speed_A = calc_speed_a(cha_reading); 
+	float speed_B = calc_speed_b(chb_reading);
 	itoa(speed_A, str, 10);
 	printf(str);
 	printf("\n");
