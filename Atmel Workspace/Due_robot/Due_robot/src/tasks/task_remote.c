@@ -8,6 +8,7 @@
 #include <asf.h>
 #include "utils.h"
 #include "sync.h"
+#include "pwm_func.h"
 
 void task_remote(void *pvParameters)
 {
@@ -23,10 +24,14 @@ void task_remote(void *pvParameters)
 			switch(recieved)
 			{
 			case 7:
-				running = 1;
+				//running = 1;
+				pwm_set_value_A(1000);
+				pwm_set_value_B(1000);
 				break;
 			case 11:
-				running = 0;
+				//running = 0;
+				pwm_set_value_A(1500);
+				pwm_set_value_B(1500);
 				break;
 			default:
 				break;
