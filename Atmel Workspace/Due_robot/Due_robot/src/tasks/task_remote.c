@@ -24,19 +24,14 @@ void task_remote(void *pvParameters)
 			switch(recieved)
 			{
 			case 7:
-				//running = 1;
-				pwm_set_value_A(1000);
-				pwm_set_value_B(1000);
+				running = 1;
 				break;
 			case 11:
-				//running = 0;
-				pwm_set_value_A(1500);
-				pwm_set_value_B(1500);
+				running = 0;
 				break;
 			default:
 				break;
 			}
-			new_value = 1;
 		}
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 	}

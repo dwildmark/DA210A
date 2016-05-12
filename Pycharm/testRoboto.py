@@ -3,19 +3,27 @@ import cv2
 import math
 import time
 import serial
+import serial.tools.list_ports
 import imutils.video.videostream as imv
 from sys import platform as _platform
+import socket
 
-screenwidth = 640
-screenheight = 480
+screenwidth = 320
+screenheight = 240
 camera = cv2.VideoCapture(0)
 screenrads = 53.5 * math.pi / 180
 radiansPerPixel = screenrads / screenwidth
-maxDist = 400
-targetWidth = 24.5
-targetHeight = 22.5
+maxDist = 400 #cm
+targetWidth = 20 #cm
+targetHeight = 20 #cm
 minWidth = (targetWidth/maxDist) * radiansPerPixel
 minHeight = (targetHeight/maxDist) * radiansPerPixel
+
+def getIP():
+    try:
+        return [l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) if l][0][0]
+    except:
+        return "Not connected to Wifi"
 
 
 #ser = serial.Serial(
@@ -24,18 +32,33 @@ minHeight = (targetHeight/maxDist) * radiansPerPixel
 
 #print("connected to: " + ser.portstr)
 if _platform == "linux2":
-    video = imv.VideoStream(usePiCamera=True, resolution=(screenwidth,screenheight), framerate=6)
+    video = imv.VideoStream(usePiCamera=True, resolution=(screenwidth,screenheight), framerate=15)
 else:
     video = imv.VideoStream(resolution=(640,480))
 video.start()
 
+#Fullscreen
+cv2.namedWindow("Frame", cv2.WND_PROP_FULLSCREEN)
+cv2.setWindowProperty("Frame", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+ports = list(serial.tools.list_ports.comports())
+addr = ''
+for p in ports:
+    print p[0]
+    if '/dev/ttyACM' in p[0]:
+        addr = str(p[0])
+ser = serial.Serial(
+    port=addr, baudrate=115200, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS,
+    timeout=0, writeTimeout=0)
+
 # keep looping
-time.sleep(5)
+time.sleep(1)
 while True:
     #time.sleep(0.1)
     # grab the current frame and initialize the status text
     frame = video.read()
     status = "No Targets"
+    status2 = "1500:1500"
 
     # convert the frame to grayscale, blur it, and detect edges
     #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -85,7 +108,7 @@ while True:
     if largestArea > 0:
         # draw an outline around the target and update the status text
         cv2.drawContours(frame, [largestApprox], -1, (0, 0, 255), 4)
-        status = "Distance: " + str(distance) + "cm, pixels: " + str(w) + "x" + str(h)
+        status = "D: " + str(int(distance)) + "cm "
         # compute the center of the contour region and draw the
         # crosshairs
         M = cv2.moments(largestApprox)
@@ -98,22 +121,30 @@ while True:
         # Calculate pulsewidths for Arduino
         middleX = frame.shape[1] / 2
 
-        sideError = middleX - cX
+        sideError = (middleX - cX) * radiansPerPixel
         distanceError = (distance - 100) * 4
-        PWL = (distanceError + 1500) + (sideError / 2) * 0.1
-        PWR = (distanceError + 1500) - (sideError / 2) * 0.1
+        distanceError = min(max(-500, distanceError), 500)
+        PWL = (distanceError + 1500) + (sideError / 2) * 1000
+        PWR = (distanceError + 1500) - (sideError / 2) * 1000
 
         PWL = int(min(max(1000, PWL), 2000))
         PWR = int(min(max(1000, PWR), 2000))
 
         stringen = str(PWL) + ":" + str(PWR)
-        print(stringen)
-        #ser.write(stringen + "\r\n")
+        status2 = stringen
+        ser.write(stringen + "\r\n")
         #print(ser.readline())
 
+    else:
+        ser.write("1500:1500" + "\r\n")
+    status2 += " " + ser.readline()
+        
 
 
-    cv2.putText(frame, status, (20, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+
+    cv2.putText(frame, getIP(), (20, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 150), 2)
+    cv2.putText(frame, status, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 150), 2)
+    cv2.putText(frame, status2, (20, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 150), 2)
     cv2.imshow("Frame", frame)
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):

@@ -27,16 +27,15 @@ void task_regulate(void *pvParameters)
 //		itoa(speed, str, 10);
 // 		printf(str);
 // 		printf("\n");
-		if(running)
+		if(running == 1)
 		{
-			if(new_value)
-			{
-				motor_controller(cha_setpoint, chb_setpoint);
-			}
-		} else
+			motor_controller(cha_setpoint, chb_setpoint);
+			printf("Running");
+		} 
+		else if(running == 0)
 		{
-			pwm_set_value_A(1500);
-			pwm_set_value_B(1500);
+			motor_controller(1500, 1500);
+			printf("Stopped");
 		}
 		
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);

@@ -16,7 +16,7 @@ extern uint16_t chb_reading;
 extern float cha_setpoint;
 extern float chb_setpoint;
 extern uint16_t new_value;
-extern uint8_t running;
+extern int running;
 
 /* The conversion array length for calculating ball distance */
 #define CONV_ARR_LENGTH 100

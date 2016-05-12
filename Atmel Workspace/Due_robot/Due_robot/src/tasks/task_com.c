@@ -22,12 +22,15 @@ void task_com(void *pvParameters)
 		cp = strdup(str);
 		char *tok = cp, *end = cp;
 		strsep(&end, ":");
-		if(new_value==0) cha_setpoint = atoi(tok);
+		cha_setpoint = atoi(tok);
 		tok = end;
 		strsep(&end, ":");
-		if(new_value==0) chb_setpoint = atoi(tok);
-		new_value = 1;
-
+		chb_setpoint = atoi(tok);
+// 		if(running == 1) {
+// 			printf("Running");
+// 		} else if(running == 0){
+// 			printf("Stopped");
+// 		}
 		/* Sleep for some time */
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 	}
