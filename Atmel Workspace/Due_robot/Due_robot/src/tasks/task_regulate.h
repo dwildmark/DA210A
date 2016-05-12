@@ -12,9 +12,12 @@
 #define OFFSET		1500
 #define K_PROP		(2.4)
 #define K_INT		(0.4)
+#define BUFF_LENGTH	6
+#define MOTOR_ZERO	1500
 
 void task_regulate(void *pvParameters);
 float calc_speed(int new_value);
 void regulate_PID(float cha_setpoint, float chb_setpoint);
+void motor_controller(uint16_t target_value_A, uint16_t target_value_B);
 
 #endif /* TASK_REGULATE_H_ */

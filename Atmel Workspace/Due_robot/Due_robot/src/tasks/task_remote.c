@@ -23,12 +23,10 @@ void task_remote(void *pvParameters)
 			switch(recieved)
 			{
 			case 7:
-				cha_setpoint = 50;
-				chb_setpoint = 50;
+				running = 1;
 				break;
 			case 11:
-				cha_setpoint = 0;
-				chb_setpoint = 0;
+				running = 0;
 				break;
 			default:
 				break;

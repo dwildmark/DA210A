@@ -55,6 +55,6 @@ void init_pins(void)
 
 uint8_t read_remote(void)
 {
-	int reading = ioport_get_pin_level(RX_PIN0) | (ioport_get_pin_level(RX_PIN1)<<1) | (ioport_get_pin_level(RX_PIN2)<<2) | (ioport_get_pin_level(RX_PIN3)<<3);
+	uint8_t reading = ioport_get_pin_level(RX_PIN0) | (ioport_get_pin_level(RX_PIN1)<<1) | (ioport_get_pin_level(RX_PIN2)<<2) | (ioport_get_pin_level(RX_PIN3)<<3);
 	return reading;
 }

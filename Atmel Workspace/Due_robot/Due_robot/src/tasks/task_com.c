@@ -14,15 +14,13 @@ void task_com(void *pvParameters)
 	portTickType xLastWakeTime;
 	const portTickType xTimeIncrement = 50;	
 	xLastWakeTime = xTaskGetTickCount();
-	char str[20] = {0};
-	printf("Task initiated\n");
 	char *cp;
 	while(1)
 	{	
+		char str[20] = {0};
 		gets(str);
 		cp = strdup(str);
 		char *tok = cp, *end = cp;
-		
 		strsep(&end, ":");
 		if(new_value==0) cha_setpoint = atoi(tok);
 		tok = end;

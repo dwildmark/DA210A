@@ -21,17 +21,22 @@ void task_regulate(void *pvParameters)
 	char str[30] = {0};
 			
 	while(1){
-		//regulate_PID(cha_setpoint, chb_setpoint);
-		read_counters();
-		int speed = (int) calc_speed(cha_reading);
-		itoa(speed, str, 10);
+//		regulate_PID(cha_setpoint, chb_setpoint);
+//		read_counters();
+//		int speed = (int) calc_speed(cha_reading);
+//		itoa(speed, str, 10);
 // 		printf(str);
 // 		printf("\n");
-		
-		if(new_value)
+		if(running)
 		{
-			pwm_set_value_A(cha_setpoint);
-			pwm_set_value_B(chb_setpoint);
+			if(new_value)
+			{
+				motor_controller(cha_setpoint, chb_setpoint);
+			}
+		} else
+		{
+			pwm_set_value_A(1500);
+			pwm_set_value_B(1500);
 		}
 		
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
@@ -100,4 +105,30 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	pwm_set_value_B(pwm_outval_B);
 	old_err_A = new_err_A; //Set old error to new error
 	old_err_B = new_err_B;
+}
+
+void motor_controller(uint16_t target_value_A, uint16_t target_value_B)
+{
+	static int buff_A[BUFF_LENGTH] = {0};
+	static int buff_B[BUFF_LENGTH] = {0};
+	int temp_sum_A = 0;
+	int temp_sum_B = 0;
+	/* Move value buffer one sample forward */
+	for(int k = BUFF_LENGTH - 1; k > 0; k--){
+		buff_A[k] = buff_A[k-1];
+		buff_B[k] = buff_B[k-1];
+	}
+	buff_A[0] = target_value_A - MOTOR_ZERO;
+	buff_B[0] = target_value_B - MOTOR_ZERO;
+	
+	/* Filter the signal */
+	for(int k = 0; k < BUFF_LENGTH; k++){
+		temp_sum_A += buff_A[k];
+		temp_sum_B += buff_B[k];
+	}
+	
+	int mean_value_A = (temp_sum_A / BUFF_LENGTH) + MOTOR_ZERO;
+	int mean_value_B = (temp_sum_B / BUFF_LENGTH) + MOTOR_ZERO;
+	pwm_set_value_A(mean_value_A);
+	pwm_set_value_B(mean_value_B);
 }
