@@ -23,25 +23,25 @@ int pwm_config(void)
 			.ul_mck = sysclk_get_cpu_hz()
 		};
 		pwm_init(PWM, &pwmclock);
-		pwm_instance_A.alignment = PWM_ALIGN_LEFT;
-		pwm_instance_A.polarity = PWM_LOW;
-		pwm_instance_A.ul_prescaler = PWM_CMR_CPRE_CLKA;
-		pwm_instance_A.ul_period = PWM_RESOLUTION;
-		pwm_instance_A.ul_duty = 0;
-		pwm_instance_A.channel = PWM_CHANNEL_0;
-		pwm_channel_init(PWM, &pwm_instance_A);
-		pio_set_peripheral(PWM_PIO, PWM_PIO_PERIPHERAL, PWM_PIN_A);
-		pwm_channel_enable(PWM, PWM_CHANNEL_0);
-		
-		/* Initialize channel B PWM */
-		pwm_channel_disable(PWM, PWM_CHANNEL_1);
 		pwm_instance_B.alignment = PWM_ALIGN_LEFT;
 		pwm_instance_B.polarity = PWM_LOW;
 		pwm_instance_B.ul_prescaler = PWM_CMR_CPRE_CLKA;
 		pwm_instance_B.ul_period = PWM_RESOLUTION;
 		pwm_instance_B.ul_duty = 0;
-		pwm_instance_B.channel = PWM_CHANNEL_1;
+		pwm_instance_B.channel = PWM_CHANNEL_0;
 		pwm_channel_init(PWM, &pwm_instance_B);
+		pio_set_peripheral(PWM_PIO, PWM_PIO_PERIPHERAL, PWM_PIN_A);
+		pwm_channel_enable(PWM, PWM_CHANNEL_0);
+		
+		/* Initialize channel B PWM */
+		pwm_channel_disable(PWM, PWM_CHANNEL_1);
+		pwm_instance_A.alignment = PWM_ALIGN_LEFT;
+		pwm_instance_A.polarity = PWM_LOW;
+		pwm_instance_A.ul_prescaler = PWM_CMR_CPRE_CLKA;
+		pwm_instance_A.ul_period = PWM_RESOLUTION;
+		pwm_instance_A.ul_duty = 0;
+		pwm_instance_A.channel = PWM_CHANNEL_1;
+		pwm_channel_init(PWM, &pwm_instance_A);
 		pio_set_peripheral(PWM_PIO, PWM_PIO_PERIPHERAL, PWM_PIN_B);
 		pwm_channel_enable(PWM, PWM_CHANNEL_1);
 		return 0;

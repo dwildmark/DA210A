@@ -33,9 +33,9 @@ void read_counters(void)
 	old_reading_b = new_reading_b;
 }
 
-int get_speed_vector(int oldval, int speed, int setpoint)
+float get_speed_vector(int oldval, float speed, int setpoint)
 {
-	if(oldval >= 0 && setpoint >= 0)
+	if(oldval >= 0)
 	{
 		return speed;
 	} else {
