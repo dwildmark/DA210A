@@ -24,14 +24,10 @@ void task_regulate(void *pvParameters)
 		if(running == 1)
 		{
 			regulate_PID(cha_setpoint, chb_setpoint);
-//  		printf("Running");
-// 			printf("\n");
 		} 
 		else if(running == 0)
 		{
-			motor_controller(1500, 1500);
-// 			printf("Stopped");
-// 			printf("\n");
+			regulate_PID(0, 0);
 		}
 		
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
