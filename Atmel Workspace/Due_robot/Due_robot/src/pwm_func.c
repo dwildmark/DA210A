@@ -10,7 +10,7 @@ static pwm_channel_t pwm_instance_A;
 static pwm_channel_t pwm_instance_B;
 
 /************************************************************************/
-/* Function initializes the PWM with the defined settings               */
+/* Function initializes the PWM pins with the defined settings          */
 /************************************************************************/
 int pwm_config(void)
 {
@@ -50,8 +50,8 @@ int pwm_config(void)
 }
 
 /************************************************************************/
-/* Function sets PWM dutycycle to the provided value.                   */
-/* It also limits it to between 0 and PWM_RESOLUTION.                   */
+/* Functions that sets PWM dutycycle to the provided value.             */
+/* It also limits it to between PWM_MIN_VAL and PWM_MAX_VAL.            */
 /************************************************************************/
 void pwm_set_value_A(uint32_t dutycycle)
 {
