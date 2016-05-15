@@ -10,6 +10,7 @@
 #define TASK_REMOTE_H_
 
 void task_remote(void *pvParameters);
+uint8_t read_remote(void);
 
 
 

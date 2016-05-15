@@ -16,8 +16,8 @@ xSemaphoreHandle sync = (xSemaphoreHandle) 1;
 
 uint16_t cha_reading = 0;
 uint16_t chb_reading = 0;
-float cha_setpoint;
-float chb_setpoint;
+float cha_setpoint = 0;
+float chb_setpoint = 0;
 uint16_t new_value = 0;
 int running = 1;
 

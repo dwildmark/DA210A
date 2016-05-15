@@ -5,9 +5,10 @@
  *  Author: DennisW
  */ 
 
+#include <asf.h>
 #include "utils.h"
 #include "sync.h"
-#include <asf.h>
+
 
 void read_counters(void)
 {
@@ -63,8 +64,3 @@ void init_pins(void)
 	ioport_set_pin_dir(VT_PIN, IOPORT_DIR_INPUT);
 }
 
-uint8_t read_remote(void)
-{
-	uint8_t reading = ioport_get_pin_level(RX_PIN0) | (ioport_get_pin_level(RX_PIN1)<<1) | (ioport_get_pin_level(RX_PIN2)<<2) | (ioport_get_pin_level(RX_PIN3)<<3);
-	return reading;
-}

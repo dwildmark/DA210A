@@ -6,16 +6,15 @@
  */ 
 
 #include <asf.h>
-#include "utils.h"
 #include "sync.h"
 #include "pwm_func.h"
+#include "tasks\task_remote.h"
 
 void task_remote(void *pvParameters)
 {
 	portTickType xLastWakeTime;
 	const portTickType xTimeIncrement = 50;
 	xLastWakeTime = xTaskGetTickCount();
-	char str[20] = {0};
 	while(1)
 	{
 		if(ioport_get_pin_level(VT_PIN) == true)
@@ -35,4 +34,10 @@ void task_remote(void *pvParameters)
 		}
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 	}
+}
+
+uint8_t read_remote(void)
+{
+	uint8_t reading = ioport_get_pin_level(RX_PIN0) | (ioport_get_pin_level(RX_PIN1)<<1) | (ioport_get_pin_level(RX_PIN2)<<2) | (ioport_get_pin_level(RX_PIN3)<<3);
+	return reading;
 }

@@ -7,7 +7,7 @@
 #include <asf.h>
 
 void configure_console(void)
-/* Enables feedback through the USB-cable back to terminal within Atmel Studio */
+/* Enables serial communication via the USB interface. */
 {
 	const usart_serial_options_t uart_serial_options = {
 		.baudrate = CONF_UART_BAUDRATE,
