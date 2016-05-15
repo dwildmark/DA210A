@@ -19,7 +19,7 @@ uint16_t chb_reading = 0;
 float cha_setpoint;
 float chb_setpoint;
 uint16_t new_value = 0;
-int running = 0;
+int running = 1;
 
 
 int main (void)

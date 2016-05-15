@@ -33,6 +33,16 @@ void read_counters(void)
 	old_reading_b = new_reading_b;
 }
 
+float get_speed_vector(int oldval, float speed)
+{
+	if(oldval >= 0)
+	{
+		return speed;
+	} else {
+		return -speed;
+	}
+}
+
 void init_pins(void)
 {
 	/* Input pins for reading the counters */

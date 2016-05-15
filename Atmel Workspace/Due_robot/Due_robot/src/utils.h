@@ -28,6 +28,7 @@ void read_counters(void);
 void set_speed(ioport_pin_t pin, uint16_t speed);
 void init_pins(void);
 uint8_t read_remote(void);
+float get_speed_vector(int oldval, float speed);
 
 
 #endif /* UTILS_H_ */

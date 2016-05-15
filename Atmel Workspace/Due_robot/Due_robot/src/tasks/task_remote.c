@@ -20,7 +20,7 @@ void task_remote(void *pvParameters)
 	{
 		if(ioport_get_pin_level(VT_PIN) == true)
 		{
-			int recieved = read_remote();
+			uint8_t recieved = read_remote();
 			switch(recieved)
 			{
 			case 7:
