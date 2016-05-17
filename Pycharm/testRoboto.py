@@ -9,19 +9,6 @@ import imutils.perspective as perspective
 from sys import platform as _platform
 import socket
 
-distance_setpoint = 165 #cm
-running = True
-standStill = True
-screenwidth = 400 #pixels
-screenheight = 300 #pixels
-screenrads = 53.5 * math.pi / float(180)
-radiansPerPixel = float(screenrads) / float(screenwidth)
-maxDist = 400 #cm
-targetWidth = 20 #cm
-targetHeight = 20 #cm
-minWidth = (targetWidth/float(maxDist)) / radiansPerPixel
-minHeight = (targetHeight/float(maxDist)) / radiansPerPixel
-
 def getIP():
     try:
         return [l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) if l][0][0]
@@ -29,8 +16,8 @@ def getIP():
         return "Not connected to Wifi"
 
 def click_and_close(event, x, y, flags, param):
-    global running
-    running = False
+    global looping
+    looping = False 
 
 # Finds a triangle shape in a numpy array
 def find_triangle(image):
@@ -65,7 +52,7 @@ def calculate_speed(distance, sideError):
     return (VR, VL)
 
 # Attempts to connect to Arduino and returns a serial object
-# Returns None if connection fails
+# Returns None if connection fails 
 def connect_to_arduino():
     ports = list(serial.tools.list_ports.comports())
     addr = ''
@@ -81,6 +68,21 @@ def connect_to_arduino():
         ser = None
 
     return ser
+
+looping = True
+distance_setpoint = 165 #cm
+maximum_missing_time = 1.5
+state = "stopped"
+start_time_missing = 0
+screenwidth = 400 #pixels
+screenheight = 300 #pixels
+screenrads = 53.5 * math.pi / float(180)
+radiansPerPixel = float(screenrads) / float(screenwidth)
+maxDist = 400 #cm
+targetWidth = 20 #cm
+targetHeight = 20 #cm
+minWidth = (targetWidth/float(maxDist)) / radiansPerPixel
+minHeight = (targetHeight/float(maxDist)) / radiansPerPixel
 
 if _platform == "linux2":
     video = imv.VideoStream(usePiCamera=True, resolution=(screenwidth,screenheight), framerate=30)
@@ -99,7 +101,7 @@ ser = connect_to_arduino()
 ip = getIP()
 
 # keep looping
-while running:
+while looping:
     # grab the current frame and initialize the status text
     frame = video.read()
     status = "No Targets"
@@ -112,11 +114,11 @@ while running:
 
     # find contours in the edge map
     (_, cnts, _) = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
+    
     largestArea = -1
     distance = -1
     largestApprox = None
-
+    shape_found = False
     # loop over the contours
     for c in cnts:
         # approximate the contour
@@ -140,28 +142,24 @@ while running:
             keepDims = w > minWidth and h > minHeight
             keepSolidity = solidity > 0.9
             keepAspectRatio = 0.7 <= aspectRatio <= 1.3
-            larger = area > largestArea
-
-
-
+            larger = area > largestArea           
 
             # ensure that the contour passes all our tests
             if keepDims and keepSolidity and keepAspectRatio and larger:
                 warped = perspective.four_point_transform(edged, approx.reshape(4, 2))
-                cv2.imshow("Warped", warped)
                 triangle_present = find_triangle(warped)
                 if triangle_present:
+                    shape_found = True
                     largestArea = area
                     distance = 24.5 / (radiansPerPixel * max(h, w))
                     largestApprox = approx
-
-    if largestArea > 0:
-        standStill = False
+                
+    if shape_found:
+    	state = "running"
         # draw an outline around the target and update the status text
         cv2.drawContours(frame, [largestApprox], -1, (0, 0, 125), 2)
         status = "D: " + str(int(distance)) + "cm "
-        # compute the center of the contour region and draw the
-        # crosshairs
+        # compute the center of the contour region and draw the crosshairs
         M = cv2.moments(largestApprox)
         (cX, cY) = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
         (startX, endX) = (int(cX - (w * 0.15)), int(cX + (w * 0.15)))
@@ -171,36 +169,36 @@ while running:
 
         # Calculate speed for Arduino
         middleX = frame.shape[1] / 2
-
         sideError = (middleX - cX) * float(radiansPerPixel)
-
         (VR, VL) = calculate_speed(distance, sideError)
-
+        
         if ser is not None:
+            state = "running"
             stringen = str(VR) + ":" + str(VL)
             status2 = stringen
             ser.write(stringen + "\n")
-            print stringen
+    
+    elif state == "running" and not shape_found:
+        state = "missing"
+        start_time_missing = cv2.getTickCount()        
 
-    elif not standStill:
-        standStill = True
-        if ser is not None:
-            ser.write("0:0" + "\r\n")
+    elif state == "missing" and not shape_found:
+        if float((cv2.getTickCount() - start_time_missing)) / cv2.getTickFrequency() > maximum_missing_time:
+            state = "stopped"
+    	    if ser is not None:
+                ser.write("0:0" + "\n")
+
+    elif state == "stopped" and not shape_found:
+    	pass
 
     if ser is not None:
-        status2 += " " + ser.readline()
+        status2 += " " + ser.readline() + " " + state
 
     cv2.putText(frame, ip, (20, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50, 0, 200), 1)
     cv2.putText(frame, status, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50, 0, 200), 1)
     cv2.putText(frame, status2, (20, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50, 0, 200), 1)
     cv2.imshow("Frame", frame)
-
-    key = cv2.waitKey(1) & 0xFF
-    if key == ord("q"):
-        break
-
-    if not running:
-        break
+    cv2.waitKey(1)
 
 # cleanup the camera and close any open windows
 if ser is not None:
