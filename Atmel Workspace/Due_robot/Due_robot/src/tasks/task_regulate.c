@@ -20,6 +20,7 @@ void task_regulate(void *pvParameters)
 	xLastWakeTime = xTaskGetTickCount();
 			
 	while(1){
+		ioport_set_pin_level(TEST_PIN, IOPORT_PIN_LEVEL_HIGH);
 		if(running == 1) {
 			
 			regulate_PID(cha_setpoint, chb_setpoint);
@@ -29,6 +30,7 @@ void task_regulate(void *pvParameters)
 			regulate_PID(0, 0);
 			
 		}
+		ioport_set_pin_level(TEST_PIN, IOPORT_PIN_LEVEL_LOW);
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 	}
 }
@@ -39,7 +41,6 @@ void task_regulate(void *pvParameters)
 float calc_speed_a(int reading)
 {
 	static int xbuff[BUFF_LENGTH] = {0};
-	static float c = (15.4 * 3.1415)/(((float)taskREG_PERIOD/1000) * 72);
 	float temp_sum = 0;
 	
 	/* Move value buffer one sample forward */
@@ -54,14 +55,13 @@ float calc_speed_a(int reading)
 	}
 	
 	float mean_value = temp_sum / (float)BUFF_LENGTH;
-	float speed = mean_value * c;
+	float speed = mean_value * PULSE_TO_SPEED;
 	return speed;
 }
 
 float calc_speed_b(int reading)
 {
 	static int xbuff[BUFF_LENGTH] = {0};
-	static float c = (15.4 * 3.1415)/(((float)taskREG_PERIOD/1000) * 72);
 	float temp_sum = 0;
 	
 	/* Move value buffer one sample forward */

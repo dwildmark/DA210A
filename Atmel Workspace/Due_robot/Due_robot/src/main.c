@@ -33,12 +33,12 @@ int main (void)
 	pwm_config();
 	delay_init(sysclk_get_cpu_hz());
 	adc_config();
-	init_properties();
+	init_properties(detect_addon());
 
 	/* Configure RTOS tasks and start tasks */
 	vSemaphoreCreateBinary(sync);
-	xTaskCreate(task_com, (const signed char * const) "Com", TASK_STACKSIZE, NULL, 1, NULL);
-	xTaskCreate(task_regulate, (const signed char * const) "regulate", TASK_STACKSIZE, NULL, 1, NULL);
-	xTaskCreate(task_remote, (const signed char * const) "remote", TASK_STACKSIZE, NULL, 1, NULL);
-	vTaskStartScheduler();	
+	xTaskCreate(task_com, (const signed char * const) "Com", TASK_STACKSIZE, NULL, 2, NULL);
+	xTaskCreate(task_regulate, (const signed char * const) "regulate", TASK_STACKSIZE, NULL, 4, NULL);
+	xTaskCreate(task_remote, (const signed char * const) "remote", TASK_STACKSIZE, NULL, 3, NULL);
+	vTaskStartScheduler();
 }

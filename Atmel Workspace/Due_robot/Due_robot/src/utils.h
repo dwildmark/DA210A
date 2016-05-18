@@ -22,7 +22,7 @@ void init_pins(void);
 float get_speed_vector(int oldval, float speed);
 void adc_config(void);
 addon_t detect_addon(void);
-void init_properties(void);
+void init_properties(addon_t addon);
 
 
 #endif /* UTILS_H_ */

@@ -16,7 +16,7 @@
 #define taskREG_PERIOD				100
 #define INTEG_LIM					100000
 #define MAX_SETPOINT_DEVIATION		(300 * ((float)taskREG_PERIOD/1000))
-#define PULSE_TO_SPEED				(15.4 * 3.1415)/(((float)taskREG_PERIOD/1000) * 72)
+#define PULSE_TO_SPEED				(15.4 * 3.1415)/(((float) taskREG_PERIOD/1000) * 72)
 
 
 void task_regulate(void *pvParameters);

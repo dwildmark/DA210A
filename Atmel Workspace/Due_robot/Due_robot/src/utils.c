@@ -62,6 +62,9 @@ void init_pins(void)
 	ioport_set_pin_dir(RX_PIN2, IOPORT_DIR_INPUT);
 	ioport_set_pin_dir(RX_PIN3, IOPORT_DIR_INPUT);
 	ioport_set_pin_dir(VT_PIN, IOPORT_DIR_INPUT);
+	
+	/* TEST-pin for measuring execution time */
+	ioport_set_pin_dir(TEST_PIN, IOPORT_DIR_OUTPUT);
 }
 
 void adc_config(void)
@@ -90,9 +93,8 @@ addon_t detect_addon(void)
 	}
 }
 
-void init_properties(void)
+void init_properties(addon_t addon)
 {
-	addon_t addon = detect_addon();
 	switch(addon) {
 		case T800:
 			//TODO: Set properties for T800-addon.

@@ -23,6 +23,7 @@
 #define	RX_PIN1		PIO_PC18_IDX	//Pin 45
 #define RX_PIN2		PIO_PC17_IDX	//Pin 46
 #define RX_PIN3		PIO_PC16_IDX	//Pin 47
+#define TEST_PIN	PIO_PD9_IDX		//Pin 30 for TEST
 /* "Global" variables declared in main file is also declared here */
 extern xSemaphoreHandle sync;
 extern uint16_t cha_reading;
