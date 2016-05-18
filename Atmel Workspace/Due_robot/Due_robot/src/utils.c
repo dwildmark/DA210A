@@ -79,7 +79,7 @@ addon_t detect_addon(void)
 	adc_start(ADC);
 	while((adc_get_status(ADC) & 0x1<<24)==0);
 	uint16_t adc_val = adc_get_latest_value(ADC);
-	if(adc_val >= 0 && adc_val < 550) {
+	if(adc_val >= 250 && adc_val < 550) {
 		return T800;
 	} else if(adc_val >= 550 && adc_val < 850) {
 		return OPTIMUS_PRIME;

@@ -34,7 +34,7 @@ int main (void)
 	delay_init(sysclk_get_cpu_hz());
 	adc_config();
 	init_properties();
-	
+
 	/* Configure RTOS tasks and start tasks */
 	vSemaphoreCreateBinary(sync);
 	xTaskCreate(task_com, (const signed char * const) "Com", TASK_STACKSIZE, NULL, 1, NULL);
