@@ -1,4 +1,4 @@
-# Project: FoLoMi
+# Project: Folomi Mcfoloface
 ## Group: Cynthia Breazeal
 
 Repository for project group Cynthia Breazeal course DA210A  at Malmoe University
