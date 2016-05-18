@@ -38,16 +38,16 @@ def find_triangle(image):
 # distance in cm, sideError in radians
 # Returns tuple with speed setpoints
 def calculate_speed(distance, sideError):
-    v = min(math.pow(2, (distance-distance_setpoint)/5) - 1, 70)
+    v = min(math.pow(2, (distance-distance_setpoint)/5) - 1, 65)
     degrees = math.degrees(sideError / 2)
-    deltaV = math.sqrt(math.fabs(degrees*20))
+    deltaV = math.sqrt(math.fabs(degrees*10))
 
     if degrees > 0:
-       VL = int(min((v + deltaV), 80))
-       VR = int(min((v - deltaV), 80))
+       VL = int(min((v + deltaV), 75))
+       VR = int(min((v - deltaV), 75))
     else:
-       VL = int(min((v - deltaV), 80))
-       VR = int(min((v + deltaV), 80))
+       VL = int(min((v - deltaV), 75))
+       VR = int(min((v + deltaV), 75))
 
     return (VR, VL)
 
