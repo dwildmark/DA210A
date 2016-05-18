@@ -40,7 +40,7 @@ def find_triangle(image):
 def calculate_speed(distance, sideError):
     v = min(math.pow(2, (distance-distance_setpoint)/5) - 1, 65)
     degrees = math.degrees(sideError / 2)
-    deltaV = math.sqrt(math.fabs(degrees*20))
+    deltaV = math.sqrt(math.fabs(degrees*15))
 
     if degrees > 0:
        VL = int(min((v + deltaV), 75))
@@ -71,7 +71,7 @@ def connect_to_arduino():
 
 looping = True
 distance_setpoint = 165 #cm
-maximum_missing_time = 1.5
+maximum_missing_time = 0.7
 state = "stopped"
 start_time_missing = 0
 screenwidth = 400 #pixels
