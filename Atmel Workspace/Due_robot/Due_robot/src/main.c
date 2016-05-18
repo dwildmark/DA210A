@@ -32,6 +32,8 @@ int main (void)
 	init_pins();
 	pwm_config();
 	delay_init(sysclk_get_cpu_hz());
+	adc_config();
+	init_properties();
 	
 	/* Configure RTOS tasks and start tasks */
 	vSemaphoreCreateBinary(sync);

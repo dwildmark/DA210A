@@ -64,3 +64,47 @@ void init_pins(void)
 	ioport_set_pin_dir(VT_PIN, IOPORT_DIR_INPUT);
 }
 
+void adc_config(void)
+{
+	pmc_enable_periph_clk(ID_ADC);
+	adc_init(ADC, sysclk_get_main_hz(), 20000000, 0);
+	adc_configure_timing(ADC, 0, 0, 0);
+	adc_set_resolution(ADC, ADC_MR_LOWRES);
+	adc_enable_channel(ADC, ADC_CHANNEL_12); //Analog Pin 10
+	adc_configure_trigger(ADC, ADC_TRIG_SW, 0);
+}
+
+addon_t detect_addon(void)
+{
+	adc_start(ADC);
+	while((adc_get_status(ADC) & 0x1<<24)==0);
+	uint16_t adc_val = adc_get_latest_value(ADC);
+	if(adc_val >= 0 && adc_val < 550) {
+		return T800;
+	} else if(adc_val >= 550 && adc_val < 850) {
+		return OPTIMUS_PRIME;
+	} else if(adc_val >= 850 && adc_val < 1024){
+		return ROBOCOP;
+	} else {
+		return NOT_DETETCTED;
+	}
+}
+
+void init_properties(void)
+{
+	addon_t addon = detect_addon();
+	switch(addon) {
+		case T800:
+			//TODO: Set properties for T800-addon.
+			break;
+		case OPTIMUS_PRIME:
+			//TODO: Set properties for Optimus Prime-addon.
+			break;
+		case ROBOCOP:
+			//TODO: Set properties for Robocop-addon.
+			break;
+		case NOT_DETETCTED:
+			//TODO: Set default properties.
+			break;
+	}
+}

@@ -20,15 +20,15 @@ void task_regulate(void *pvParameters)
 	xLastWakeTime = xTaskGetTickCount();
 			
 	while(1){
-		if(running == 1)
-		{
+		if(running == 1) {
+			
 			regulate_PID(cha_setpoint, chb_setpoint);
-		} 
-		else if(running == 0)
-		{
+			
+		} else if(running == 0) {
+			
 			regulate_PID(0, 0);
+			
 		}
-		
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 	}
 }
@@ -76,7 +76,7 @@ float calc_speed_b(int reading)
 	}
 	
 	float mean_value = temp_sum / (float)BUFF_LENGTH;
-	float speed = mean_value * c;
+	float speed = mean_value * PULSE_TO_SPEED;
 	return speed;
 }
 
@@ -92,6 +92,12 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	
 	static int old_outval_A = 0;
 	static int old_outval_B = 0;
+	
+	static int current_setpoint_a = 0;
+	static int current_setpoint_b = 0;
+	
+	current_setpoint_a += limit_setpoint(setpoint_A, current_setpoint_a);
+	current_setpoint_b += limit_setpoint(setpoint_B, current_setpoint_b);
 
 	const float dT = (float) taskREG_PERIOD/1000; //Calculate the time step
 	
@@ -100,8 +106,8 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	float speed_A = get_speed_vector(old_outval_A, calc_speed_a(cha_reading));
 	float speed_B = get_speed_vector(old_outval_B, calc_speed_b(chb_reading));
 
-	float new_err_A = setpoint_A - speed_A; //Current error
-	float new_err_B = setpoint_B - speed_B;
+	float new_err_A = current_setpoint_a - speed_A; //Current error
+	float new_err_B = current_setpoint_b - speed_B;
 	
 	
 	
@@ -125,4 +131,18 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 
 	old_outval_A = pwm_outval_A - OFFSET;
 	old_outval_B = pwm_outval_B - OFFSET;
+}
+
+
+/************************************************************************/
+/* Function to limit changes in setpoint.                               */
+/* Used for limiting the acceleration                                   */
+/************************************************************************/
+int limit_setpoint(int new_setpoint, int current_setpoint) 
+{
+	if(new_setpoint >= current_setpoint){
+		return min(MAX_SETPOINT_DEVIATION, (new_setpoint - current_setpoint));
+	} else {
+		return -min(MAX_SETPOINT_DEVIATION, (current_setpoint - new_setpoint));
+	}
 }
