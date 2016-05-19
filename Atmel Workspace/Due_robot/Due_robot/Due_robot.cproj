@@ -677,6 +677,12 @@
     <Compile Include="src\tasks\task_remote.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\test.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\test.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\utils.c">
       <SubType>compile</SubType>
     </Compile>

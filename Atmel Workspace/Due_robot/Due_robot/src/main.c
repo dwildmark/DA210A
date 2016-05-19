@@ -9,6 +9,7 @@
 #include "utils.h"
 #include "pwm_func.h"
 #include "tasks/task_remote.h"
+#include "test.h"
 
 
 /* "Global" variables shared between tasks declared here */
