@@ -23,6 +23,7 @@ void task_regulate(void *pvParameters)
 		if(running == 1)
 		{
 			regulate_PID(cha_setpoint, chb_setpoint);
+			//regulate_Ziegler(cha_setpoint, chb_setpoint);
 		} 
 		else if(running == 0)
 		{
@@ -125,4 +126,29 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 
 	old_outval_A = pwm_outval_A - OFFSET;
 	old_outval_B = pwm_outval_B - OFFSET;
+}
+
+void regulate_Ziegler(float setpoint_A, float setpoint_B)
+{
+	static int old_outval_A = 0;
+	static int old_outval_B = 0;
+	const float dT = (float) taskREG_PERIOD/1000; //Calculate the time step
+	
+	read_counters();
+	
+	float speed_A = get_speed_vector(old_outval_A, calc_speed_a(cha_reading));
+	float speed_B = get_speed_vector(old_outval_B, calc_speed_b(chb_reading));
+
+	float new_err_A = setpoint_A - speed_A; //Current error
+	float new_err_B = setpoint_B - speed_B;
+	
+	float prop_A = (K_PROP) * (float)new_err_A;
+	float prop_B = (K_PROP) * (float)new_err_B;
+	
+	
+	int pwm_outval_A = OFFSET + (int)(prop_A);
+	int pwm_outval_B = OFFSET + (int)(prop_B);
+	
+	pwm_set_value_A(pwm_outval_A); //Write control value to pwm
+	pwm_set_value_B(pwm_outval_B);
 }
