@@ -5,9 +5,11 @@ import time
 import serial
 import serial.tools.list_ports
 import imutils.video.videostream as imv
+from imutils.video import FPS
 import imutils.perspective as perspective
 from sys import platform as _platform
 import socket
+import numpy as np
 
 def getIP():
     try:
@@ -70,22 +72,22 @@ def connect_to_arduino():
     return ser
 
 looping = True
-distance_setpoint = 165 #cm
-maximum_missing_time = 0.7
+distance_setpoint = 150 #cm
+maximum_missing_time = 0.2
 state = "stopped"
 start_time_missing = 0
-screenwidth = 400 #pixels
-screenheight = 300 #pixels
-screenrads = 53.5 * math.pi / float(180)
+screenwidth = 320 #pixels
+screenheight = 240 #pixels
+screenrads = math.radians(53.5)
 radiansPerPixel = float(screenrads) / float(screenwidth)
-maxDist = 400 #cm
+maxDist = 500 #cm
 targetWidth = 20 #cm
 targetHeight = 20 #cm
 minWidth = (targetWidth/float(maxDist)) / radiansPerPixel
 minHeight = (targetHeight/float(maxDist)) / radiansPerPixel
 
 if _platform == "linux2":
-    video = imv.VideoStream(usePiCamera=True, resolution=(screenwidth,screenheight), framerate=30)
+    video = imv.VideoStream(usePiCamera=True, resolution=(screenwidth,screenheight), framerate=60)
 else:
     video = imv.VideoStream(resolution=(640,480))
 video.start()
@@ -99,6 +101,7 @@ cv2.setMouseCallback("Frame", click_and_close)
 
 ser = connect_to_arduino()
 ip = getIP()
+fps = FPS().start()
 
 # keep looping
 while looping:
@@ -110,7 +113,7 @@ while looping:
     # convert the frame to grayscale, blur it, and detect edges
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (7, 7), 0)
-    edged = cv2.Canny(blurred, 30, 200)
+    edged = cv2.Canny(blurred, 30, 230)
 
     # find contours in the edge map
     (_, cnts, _) = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -119,11 +122,12 @@ while looping:
     distance = -1
     largestApprox = None
     shape_found = False
+    largest_side_px = 0
     # loop over the contours
     for c in cnts:
         # approximate the contour
         peri = cv2.arcLength(c, True)
-        approx = cv2.approxPolyDP(c, 0.05 * peri, True)
+        approx = cv2.approxPolyDP(c, 0.03 * peri, True)
 
         # ensure that the approximated contour is "roughly" rectangular
         if 4 == len(approx):
@@ -151,25 +155,28 @@ while looping:
                 if triangle_present:
                     shape_found = True
                     largestArea = area
-                    distance = 24.5 / (radiansPerPixel * max(h, w))
+                    distance = targetWidth / (radiansPerPixel * max(h, w))
                     largestApprox = approx
+                    largest_side_px = max(w,h)
                 
     if shape_found:
     	state = "running"
         # draw an outline around the target and update the status text
-        cv2.drawContours(frame, [largestApprox], -1, (0, 0, 125), 2)
-        status = "D: " + str(int(distance)) + "cm "
+        cv2.drawContours(gray, [largestApprox], -1, (0, 0, 125), 2)
+        # Concatenate information string
+        status = "D: " + str(int(distance)) + "cm px: " + str(int(largest_side_px))
         # compute the center of the contour region and draw the crosshairs
         M = cv2.moments(largestApprox)
         (cX, cY) = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
         (startX, endX) = (int(cX - (w * 0.15)), int(cX + (w * 0.15)))
         (startY, endY) = (int(cY - (h * 0.15)), int(cY + (h * 0.15)))
-        cv2.line(frame, (startX, cY), (endX, cY), (0, 0, 125), 2)
-        cv2.line(frame, (cX, startY), (cX, endY), (0, 0, 125), 2)
+        cv2.line(gray, (startX, cY), (endX, cY), (0, 0, 125), 2)
+        cv2.line(gray, (cX, startY), (cX, endY), (0, 0, 125), 2)
 
-        # Calculate speed for Arduino
+        # Calculate how many radians the object differs from center
         middleX = frame.shape[1] / 2
         sideError = (middleX - cX) * float(radiansPerPixel)
+        # Calculate speed for Arduino
         (VR, VL) = calculate_speed(distance, sideError)
         
         if ser is not None:
@@ -194,14 +201,21 @@ while looping:
     if ser is not None:
         status2 += " " + ser.readline() + " " + state
 
-    cv2.putText(frame, ip, (20, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50, 0, 200), 1)
-    cv2.putText(frame, status, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50, 0, 200), 1)
-    cv2.putText(frame, status2, (20, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (50, 0, 200), 1)
-    cv2.imshow("Frame", frame)
-    cv2.waitKey(1)
+    fps.update()
+    fps.stop()
+    
+    cv2.putText(gray, ip + "fps: " + str(int(fps.fps())), (20, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
+    cv2.putText(gray, status, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
+    cv2.putText(gray, status2, (20, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
+    cv2.imshow("Frame", np.hstack([gray, edged]))
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
+        break
 
 # cleanup the camera and close any open windows
 if ser is not None:
     ser.close()
 video.stop()
 cv2.destroyAllWindows()
+
+
