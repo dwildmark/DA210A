@@ -33,7 +33,6 @@
 #define ADDON_DIR_LOW		(false)
 
 /* "Global" variables declared in main file is also declared here */
-extern xSemaphoreHandle sync;
 extern uint16_t cha_reading;
 extern uint16_t chb_reading;
 extern float cha_setpoint;

@@ -14,8 +14,6 @@
 
 
 /* "Global" variables shared between tasks declared here */
-xSemaphoreHandle sync = (xSemaphoreHandle) 1;
-
 uint16_t cha_reading = 0;
 uint16_t chb_reading = 0;
 float cha_setpoint = 0;
@@ -43,7 +41,6 @@ int main (void)
 	init_properties(addon);
 
 	/* Configure RTOS tasks and start tasks */
-	vSemaphoreCreateBinary(sync);
 	xTaskCreate(task_com, (const signed char * const) "Com", TASK_STACKSIZE, NULL, 2, NULL);
 	xTaskCreate(task_regulate, (const signed char * const) "regulate", TASK_STACKSIZE, NULL, 4, NULL);
 	xTaskCreate(task_remote, (const signed char * const) "remote", TASK_STACKSIZE, NULL, 3, NULL);
