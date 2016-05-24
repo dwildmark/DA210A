@@ -22,21 +22,19 @@ void task_remote(void *pvParameters)
 			uint8_t recieved = read_remote();
 			switch(recieved)
 			{
-			case 7:
+			case BTN_ON:
 				running = 1;
 				break;
-			case 11:
+			case BTN_OFF:
 				running = 0;
 				break;
-			case 13:
-				//TODO: Control up-motion of addon
-				addon_up = true;
-				addon_down = false;
+			case BTN_UP:
+				if(addon_down) addon_down = false;
+				else addon_up = true;
 				break;
-			case 14:
-				//TODO: Control down-motion of addon
-				addon_down = true;
-				addon_up = false;
+			case BTN_DOWN:
+				if(addon_up) addon_up = false;
+				else addon_down = true;
 				break;
 			default:
 				break;
