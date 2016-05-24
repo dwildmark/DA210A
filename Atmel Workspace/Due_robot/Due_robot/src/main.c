@@ -10,6 +10,7 @@
 #include "pwm_func.h"
 #include "tasks/task_remote.h"
 #include "test.h"
+#include "tasks/task_addon.h"
 
 
 /* "Global" variables shared between tasks declared here */
@@ -23,6 +24,8 @@ uint16_t new_value = 0;
 int running = 1;
 int max_acceleration = 0;
 addon_t addon;
+bool addon_up = false;
+bool addon_down = false;
 
 
 int main (void)
@@ -44,5 +47,6 @@ int main (void)
 	xTaskCreate(task_com, (const signed char * const) "Com", TASK_STACKSIZE, NULL, 2, NULL);
 	xTaskCreate(task_regulate, (const signed char * const) "regulate", TASK_STACKSIZE, NULL, 4, NULL);
 	xTaskCreate(task_remote, (const signed char * const) "remote", TASK_STACKSIZE, NULL, 3, NULL);
+	xTaskCreate(task_addon, (const signed char * const) "addon", TASK_STACKSIZE, NULL, 3, NULL);
 	vTaskStartScheduler();
 }

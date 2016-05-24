@@ -63,6 +63,13 @@ void init_pins(void)
 	ioport_set_pin_dir(RX_PIN3, IOPORT_DIR_INPUT);
 	ioport_set_pin_dir(VT_PIN, IOPORT_DIR_INPUT);
 	
+	/* Pins for controlling addons */
+	ioport_set_pin_dir(ADDON_SWITCH_TOP, IOPORT_DIR_INPUT);
+	ioport_set_pin_dir(ADDON_SWITCH_BTM, IOPORT_DIR_INPUT);
+	ioport_set_pin_dir(ADDON_DIR_PIN_CW, IOPORT_DIR_OUTPUT);
+	ioport_set_pin_dir(ADDON_DIR_PIN_CCW, IOPORT_DIR_OUTPUT);
+	ioport_set_pin_dir(ADDON_DRIVE_PIN, IOPORT_DIR_OUTPUT);
+	
 	/* TEST-pin for measuring execution time */
 	ioport_set_pin_dir(TEST_PIN, IOPORT_DIR_OUTPUT);
 }
@@ -112,7 +119,7 @@ void init_properties(addon_t addon)
 			break;
 		case ROBOCOP:
 			//TODO: Set properties for Robocop-addon.
-			max_acceleration = 10000;
+			max_acceleration = 300;
 			printf("module:ROBOCOP\n");
 			break;
 		case NOT_DETETCTED:

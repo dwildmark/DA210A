@@ -28,6 +28,16 @@ void task_remote(void *pvParameters)
 			case 11:
 				running = 0;
 				break;
+			case 13:
+				//TODO: Control up-motion of addon
+				addon_up = true;
+				addon_down = false;
+				break;
+			case 14:
+				//TODO: Control down-motion of addon
+				addon_down = true;
+				addon_up = false;
+				break;
 			default:
 				break;
 			}
