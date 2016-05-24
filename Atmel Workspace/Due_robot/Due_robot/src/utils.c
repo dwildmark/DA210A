@@ -80,8 +80,12 @@ void adc_config(void)
 addon_t detect_addon(void)
 {
 	adc_start(ADC);
-	while((adc_get_status(ADC) & 0x1<<24)==0);
+	while((adc_get_status(ADC) & 0x1<<24) == 0);
 	uint16_t adc_val = adc_get_latest_value(ADC);
+	/* For some reason, the first value is incorrect. Yet to find a better solution. */
+	adc_start(ADC);
+	while((adc_get_status(ADC) & 0x1<<24) == 0);
+	adc_val = adc_get_latest_value(ADC);
 	if(adc_val >= 250 && adc_val < 550) {
 		return T800;
 	} else if(adc_val >= 550 && adc_val < 850) {
@@ -98,15 +102,23 @@ void init_properties(addon_t addon)
 	switch(addon) {
 		case T800:
 			//TODO: Set properties for T800-addon.
+			max_acceleration = 10;
+			printf("module:T800\n");
 			break;
 		case OPTIMUS_PRIME:
 			//TODO: Set properties for Optimus Prime-addon.
+			max_acceleration = 300;
+			printf("module:OPTIMUS\n");
 			break;
 		case ROBOCOP:
 			//TODO: Set properties for Robocop-addon.
+			max_acceleration = 10000;
+			printf("module:ROBOCOP\n");
 			break;
 		case NOT_DETETCTED:
 			//TODO: Set default properties.
+			max_acceleration = 0;
+			printf("module:NOT_DETECTED\n");
 			break;
 	}
 }

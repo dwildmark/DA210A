@@ -21,6 +21,8 @@ float cha_setpoint = 0;
 float chb_setpoint = 0;
 uint16_t new_value = 0;
 int running = 1;
+int max_acceleration = 0;
+addon_t addon;
 
 
 int main (void)
@@ -34,7 +36,8 @@ int main (void)
 	pwm_config();
 	delay_init(sysclk_get_cpu_hz());
 	adc_config();
-	init_properties(detect_addon());
+	addon = detect_addon();
+	init_properties(addon);
 
 	/* Configure RTOS tasks and start tasks */
 	vSemaphoreCreateBinary(sync);

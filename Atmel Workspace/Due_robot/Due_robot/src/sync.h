@@ -32,6 +32,7 @@ extern float cha_setpoint;
 extern float chb_setpoint;
 extern uint16_t new_value;
 extern int running;
+extern int max_acceleration;
 
 /* The conversion array length for calculating ball distance */
 #define CONV_ARR_LENGTH 100

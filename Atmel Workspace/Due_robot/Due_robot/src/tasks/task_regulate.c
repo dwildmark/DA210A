@@ -133,16 +133,16 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	old_outval_B = pwm_outval_B - OFFSET;
 }
 
-
 /************************************************************************/
 /* Function to limit changes in setpoint.                               */
 /* Used for limiting the acceleration                                   */
 /************************************************************************/
 int limit_setpoint(int new_setpoint, int current_setpoint) 
 {
+	int max_dev = (max_acceleration * ((float)taskREG_PERIOD/1000));
 	if(new_setpoint >= current_setpoint){
-		return min(MAX_SETPOINT_DEVIATION, (new_setpoint - current_setpoint));
+		return min(max_dev, (new_setpoint - current_setpoint));
 	} else {
-		return -min(MAX_SETPOINT_DEVIATION, (current_setpoint - new_setpoint));
+		return -min(max_dev, (current_setpoint - new_setpoint));
 	}
 }
