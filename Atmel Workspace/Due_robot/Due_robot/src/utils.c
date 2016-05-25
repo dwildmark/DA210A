@@ -62,5 +62,70 @@ void init_pins(void)
 	ioport_set_pin_dir(RX_PIN2, IOPORT_DIR_INPUT);
 	ioport_set_pin_dir(RX_PIN3, IOPORT_DIR_INPUT);
 	ioport_set_pin_dir(VT_PIN, IOPORT_DIR_INPUT);
+	
+	/* Pins for controlling addons */
+	ioport_set_pin_dir(ADDON_SWITCH_TOP, IOPORT_DIR_INPUT);
+	ioport_set_pin_dir(ADDON_SWITCH_BTM, IOPORT_DIR_INPUT);
+	ioport_set_pin_dir(ADDON_DIR_PIN_CW, IOPORT_DIR_OUTPUT);
+	ioport_set_pin_dir(ADDON_DIR_PIN_CCW, IOPORT_DIR_OUTPUT);
+	ioport_set_pin_dir(ADDON_DRIVE_PIN, IOPORT_DIR_OUTPUT);
+	
+	/* TEST-pin for measuring execution time */
+	ioport_set_pin_dir(TEST_PIN, IOPORT_DIR_OUTPUT);
 }
 
+void adc_config(void)
+{
+	pmc_enable_periph_clk(ID_ADC);
+	adc_init(ADC, sysclk_get_main_hz(), 20000000, 0);
+	adc_configure_timing(ADC, 0, 0, 0);
+	adc_set_resolution(ADC, ADC_MR_LOWRES);
+	adc_enable_channel(ADC, ADC_CHANNEL_12); //Analog Pin 10
+	adc_configure_trigger(ADC, ADC_TRIG_SW, 0);
+}
+
+addon_t detect_addon(void)
+{
+	adc_start(ADC);
+	while((adc_get_status(ADC) & 0x1<<24) == 0);
+	uint16_t adc_val = adc_get_latest_value(ADC);
+	/* For some reason, the first value is incorrect. Yet to find a better solution. */
+	adc_start(ADC);
+	while((adc_get_status(ADC) & 0x1<<24) == 0);
+	adc_val = adc_get_latest_value(ADC);
+	if(adc_val >= 250 && adc_val < 550) {
+		return T800;
+	} else if(adc_val >= 550 && adc_val < 850) {
+		return OPTIMUS_PRIME;
+	} else if(adc_val >= 850 && adc_val < 1024){
+		return ROBOCOP;
+	} else {
+		return NOT_DETETCTED;
+	}
+}
+
+void init_properties(addon_t addon)
+{
+	switch(addon) {
+		case T800:
+			//TODO: Set properties for T800-addon.
+			max_acceleration = 10;
+			printf("module:T800\n");
+			break;
+		case OPTIMUS_PRIME:
+			//TODO: Set properties for Optimus Prime-addon.
+			max_acceleration = 300;
+			printf("module:OPTIMUS\n");
+			break;
+		case ROBOCOP:
+			//TODO: Set properties for Robocop-addon.
+			max_acceleration = 300;
+			printf("module:ROBOCOP\n");
+			break;
+		case NOT_DETETCTED:
+			//TODO: Set default properties.
+			max_acceleration = 0;
+			printf("module:NOT_DETECTED\n");
+			break;
+	}
+}

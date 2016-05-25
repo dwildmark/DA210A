@@ -659,6 +659,12 @@
     <Compile Include="src\pwm_func.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\tasks\task_addon.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\tasks\task_addon.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\tasks\task_com.c">
       <SubType>compile</SubType>
     </Compile>
@@ -675,6 +681,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\tasks\task_remote.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\test.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\test.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\utils.c">

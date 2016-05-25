@@ -20,16 +20,17 @@ void task_regulate(void *pvParameters)
 	xLastWakeTime = xTaskGetTickCount();
 			
 	while(1){
-		if(running == 1)
-		{
+		ioport_set_pin_level(TEST_PIN, IOPORT_PIN_LEVEL_HIGH);
+		if(running == 1) {
+
 			regulate_PID(cha_setpoint, chb_setpoint);
-			//regulate_Ziegler(cha_setpoint, chb_setpoint);
-		} 
-		else if(running == 0)
-		{
+			
+		} else if(running == 0) {
+			
 			regulate_PID(0, 0);
+			
 		}
-		
+		ioport_set_pin_level(TEST_PIN, IOPORT_PIN_LEVEL_LOW);
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 	}
 }
@@ -40,7 +41,6 @@ void task_regulate(void *pvParameters)
 float calc_speed_a(int reading)
 {
 	static int xbuff[BUFF_LENGTH] = {0};
-	static float c = (15.4 * 3.1415)/(((float)taskREG_PERIOD/1000) * 72);
 	float temp_sum = 0;
 	
 	/* Move value buffer one sample forward */
@@ -55,14 +55,13 @@ float calc_speed_a(int reading)
 	}
 	
 	float mean_value = temp_sum / (float)BUFF_LENGTH;
-	float speed = mean_value * c;
+	float speed = mean_value * PULSE_TO_SPEED;
 	return speed;
 }
 
 float calc_speed_b(int reading)
 {
 	static int xbuff[BUFF_LENGTH] = {0};
-	static float c = (15.4 * 3.1415)/(((float)taskREG_PERIOD/1000) * 72);
 	float temp_sum = 0;
 	
 	/* Move value buffer one sample forward */
@@ -77,7 +76,7 @@ float calc_speed_b(int reading)
 	}
 	
 	float mean_value = temp_sum / (float)BUFF_LENGTH;
-	float speed = mean_value * c;
+	float speed = mean_value * PULSE_TO_SPEED;
 	return speed;
 }
 
@@ -93,6 +92,12 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	
 	static int old_outval_A = 0;
 	static int old_outval_B = 0;
+	
+	static int current_setpoint_a = 0;
+	static int current_setpoint_b = 0;
+	
+	current_setpoint_a += limit_setpoint(setpoint_A, current_setpoint_a);
+	current_setpoint_b += limit_setpoint(setpoint_B, current_setpoint_b);
 
 	const float dT = (float) taskREG_PERIOD/1000; //Calculate the time step
 	
@@ -101,8 +106,8 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	float speed_A = get_speed_vector(old_outval_A, calc_speed_a(cha_reading));
 	float speed_B = get_speed_vector(old_outval_B, calc_speed_b(chb_reading));
 
-	float new_err_A = setpoint_A - speed_A; //Current error
-	float new_err_B = setpoint_B - speed_B;
+	float new_err_A = current_setpoint_a - speed_A; //Current error
+	float new_err_B = current_setpoint_b - speed_B;
 	
 	
 	
@@ -128,27 +133,16 @@ void regulate_PID(float setpoint_A, float setpoint_B)
 	old_outval_B = pwm_outval_B - OFFSET;
 }
 
-void regulate_Ziegler(float setpoint_A, float setpoint_B)
+/************************************************************************/
+/* Function to limit changes in setpoint.                               */
+/* Used for limiting the acceleration                                   */
+/************************************************************************/
+int limit_setpoint(int new_setpoint, int current_setpoint) 
 {
-	static int old_outval_A = 0;
-	static int old_outval_B = 0;
-	const float dT = (float) taskREG_PERIOD/1000; //Calculate the time step
-	
-	read_counters();
-	
-	float speed_A = get_speed_vector(old_outval_A, calc_speed_a(cha_reading));
-	float speed_B = get_speed_vector(old_outval_B, calc_speed_b(chb_reading));
-
-	float new_err_A = setpoint_A - speed_A; //Current error
-	float new_err_B = setpoint_B - speed_B;
-	
-	float prop_A = (K_PROP) * (float)new_err_A;
-	float prop_B = (K_PROP) * (float)new_err_B;
-	
-	
-	int pwm_outval_A = OFFSET + (int)(prop_A);
-	int pwm_outval_B = OFFSET + (int)(prop_B);
-	
-	pwm_set_value_A(pwm_outval_A); //Write control value to pwm
-	pwm_set_value_B(pwm_outval_B);
+	int max_dev = (max_acceleration * ((float)taskREG_PERIOD/1000));
+	if(new_setpoint >= current_setpoint){
+		return min(max_dev, (new_setpoint - current_setpoint));
+	} else {
+		return -min(max_dev, (current_setpoint - new_setpoint));
+	}
 }

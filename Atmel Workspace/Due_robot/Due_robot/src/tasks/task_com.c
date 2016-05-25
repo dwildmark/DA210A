@@ -11,9 +11,9 @@
 /* This task sends controller values to PC for logging*/
 void task_com(void *pvParameters)
 {	
-	portTickType xLastWakeTime;
-	const portTickType xTimeIncrement = 50;	
-	xLastWakeTime = xTaskGetTickCount();
+	//portTickType xLastWakeTime;
+	//const portTickType xTimeIncrement = 50;	
+	//xLastWakeTime = xTaskGetTickCount();
 	char *cp;
 	while(1)
 	{	
@@ -23,14 +23,10 @@ void task_com(void *pvParameters)
 		char *tok = cp, *end = cp;
 		strsep(&end, ":");
 		cha_setpoint = atoi(tok);
-		printf(tok);
-		printf(":");
 		tok = end;
 		strsep(&end, ":");
 		chb_setpoint = atoi(tok);
-		printf(tok);
-		printf("\n");
 		/* Sleep for some time */
-		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
+		//vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 	}
 }
