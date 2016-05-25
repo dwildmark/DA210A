@@ -15,30 +15,41 @@ void task_remote(void *pvParameters)
 	portTickType xLastWakeTime;
 	const portTickType xTimeIncrement = 50;
 	xLastWakeTime = xTaskGetTickCount();
+	uint8_t last_received = -1;
+	uint8_t iters = 0;
 	while(1)
 	{
 		if(ioport_get_pin_level(VT_PIN) == true)
 		{
-			uint8_t recieved = read_remote();
-			switch(recieved)
-			{
-			case BTN_ON:
-				running = 1;
-				break;
-			case BTN_OFF:
-				running = 0;
-				break;
-			case BTN_UP:
-				if(addon_down) addon_down = false;
-				else addon_up = true;
-				break;
-			case BTN_DOWN:
-				if(addon_up) addon_up = false;
-				else addon_down = true;
-				break;
-			default:
-				break;
+			uint8_t received = read_remote();
+			if(received != last_received) {
+				switch(received)
+				{
+					case BTN_ON:
+						running = 1;
+						break;
+					case BTN_OFF:
+						running = 0;
+						addon_up = false;
+						addon_down = false;
+						break;
+					case BTN_UP:
+						if(addon_down) addon_down = false;
+						else addon_up = true;
+						break;
+					case BTN_DOWN:
+						if(addon_up) addon_up = false;
+						else addon_down = true;
+						break;
+					default:
+						break;
+				}
+				last_received = received;
+			} else if(iters > 4) {
+				 last_received = -1;
+				 iters = 0;
 			}
+			iters++;
 		}
 		vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 	}

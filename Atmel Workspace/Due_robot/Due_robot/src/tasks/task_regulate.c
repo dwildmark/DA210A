@@ -22,7 +22,7 @@ void task_regulate(void *pvParameters)
 	while(1){
 		ioport_set_pin_level(TEST_PIN, IOPORT_PIN_LEVEL_HIGH);
 		if(running == 1) {
-			
+
 			regulate_PID(cha_setpoint, chb_setpoint);
 			
 		} else if(running == 0) {

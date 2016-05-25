@@ -19,7 +19,7 @@ uint16_t chb_reading = 0;
 float cha_setpoint = 0;
 float chb_setpoint = 0;
 uint16_t new_value = 0;
-int running = 1;
+int running = 0;
 int max_acceleration = 0;
 addon_t addon;
 bool addon_up = false;

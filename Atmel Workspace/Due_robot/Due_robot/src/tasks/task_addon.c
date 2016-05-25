@@ -29,7 +29,6 @@ void task_addon(void *pvParameters)
 			ioport_set_pin_level(ADDON_DRIVE_PIN, true);
 		} else {
 			ioport_set_pin_level(ADDON_DRIVE_PIN, false);
-			ioport_set_pin_level(ADDON_DRIVE_PIN, false);
 			ioport_set_pin_level(ADDON_DIR_PIN_CW, ADDON_DIR_LOW);
 			ioport_set_pin_level(ADDON_DIR_PIN_CCW, ADDON_DIR_LOW);
 			addon_up = false;

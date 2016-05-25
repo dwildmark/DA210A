@@ -23,13 +23,9 @@ void task_com(void *pvParameters)
 		char *tok = cp, *end = cp;
 		strsep(&end, ":");
 		cha_setpoint = atoi(tok);
-		printf(tok);
-		printf(":");
 		tok = end;
 		strsep(&end, ":");
 		chb_setpoint = atoi(tok);
-		printf(tok);
-		printf("\n");
 		/* Sleep for some time */
 		//vTaskDelayUntil(&xLastWakeTime, xTimeIncrement);
 	}
