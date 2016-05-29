@@ -1,3 +1,4 @@
+# Authors: Jonathan Böcker, Dennis Wildmark, John Tengvall, David Tran
 
 import cv2
 import math
