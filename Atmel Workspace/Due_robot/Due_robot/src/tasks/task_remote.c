@@ -2,7 +2,7 @@
  * task_remote.c
  *
  * Created: 2016-05-04 10:28:12
- *  Author: DennisW
+ *  Author: Dennis Wildmark
  */ 
 
 #include <asf.h>

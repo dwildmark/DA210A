@@ -1,5 +1,5 @@
 /*
- * Author: Jonathan
+ * Author: Jonathan, Dennis Wildmark
  */
 #include <asf.h>
 #include "config_functions/console_func.h"

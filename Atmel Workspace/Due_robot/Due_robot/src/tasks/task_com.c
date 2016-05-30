@@ -2,7 +2,7 @@
  * task_com.c
  *
  * Created: 2016-02-19 14:35:52
- *  Author: Jonathan
+ *  Author: Jonathan, Dennis Wildmark
  */ 
 #include <asf.h>
 #include "sync.h"

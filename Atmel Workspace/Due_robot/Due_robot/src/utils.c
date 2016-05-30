@@ -2,7 +2,7 @@
  * utils.c
  *
  * Created: 2016-05-02 14:09:57
- *  Author: DennisW
+ *  Author: Dennis Wildmark
  */ 
 
 #include <asf.h>

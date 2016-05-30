@@ -2,7 +2,7 @@
  * test.c
  *	Functions for testing some of the functionality in the program.
  * 
- *  Author: DennisW
+ *  Author: Dennis Wildmark
  */ 
 #include <asf.h>
 #include "utils.h"

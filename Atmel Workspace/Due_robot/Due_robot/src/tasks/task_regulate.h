@@ -2,7 +2,7 @@
  * task_regulate.h
  *
  * Created: 2/19/2016 15:58:42
- *  Author: Jonathan
+ *  Author: Jonathan, Dennis Wildmark
  */ 
 #include "utils.h"
 

@@ -2,7 +2,7 @@
  * test.h
  *
  * Created: 2016-05-19 13:36:30
- *  Author: DennisW
+ *  Author: Dennis Wildmark
  */ 
 
 

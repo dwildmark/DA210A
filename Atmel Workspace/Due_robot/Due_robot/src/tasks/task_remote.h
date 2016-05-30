@@ -2,7 +2,7 @@
  * task_remote.h
  *
  * Created: 2016-05-04 10:28:45
- *  Author: DennisW
+ *  Author: Dennis Wildmark
  */ 
 
 
